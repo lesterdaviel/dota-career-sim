@@ -15631,6 +15631,29 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     });
   }
 
+  /* Fachada de la sala: un unico muro extruido con tres huecos en arco.
+     Se hace con Shape+holes y no encajando cajas porque entre la curva
+     del arco y el dintel quedan rendijas triangulares -justo donde mas
+     canta el vacio negro-. Una malla, un material, tres vanos exactos. */
+  function buildFacadeGeometry(THREE, width, height, spring, radius, centers) {
+    var s = new THREE.Shape();
+    s.moveTo(-width / 2, 0);
+    s.lineTo(width / 2, 0);
+    s.lineTo(width / 2, height);
+    s.lineTo(-width / 2, height);
+    s.closePath();
+    centers.forEach(function (cx) {
+      var p = new THREE.Path();
+      p.moveTo(cx - radius, 0);
+      p.lineTo(cx - radius, spring);
+      p.absarc(cx, spring, radius, Math.PI, 0, true);
+      p.lineTo(cx + radius, 0);
+      p.closePath();
+      s.holes.push(p);
+    });
+    return new THREE.ExtrudeGeometry(s, { depth: 0.5, bevelEnabled: false, curveSegments: 18 });
+  }
+
   function buildKit(THREE) {
     var geo = {
       /* facetado (8 lados), no un cilindro liso: lee como monolito
@@ -15693,7 +15716,28 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       ledRing: new THREE.TorusGeometry(0.72, 0.040, 6, 22),
       /* torus pequeño del trofeo, reutilizado a escala grande como
          marco/halo (misma pieza, dos tamaños: sin geometría nueva) */
-      pedestalTrim: new THREE.TorusGeometry(0.635, 0.022, 6, 26)
+      pedestalTrim: new THREE.TorusGeometry(0.635, 0.022, 6, 26),
+
+      /* --- Envolvente: la sala deja de flotar -------------------
+         Antes solo habia suelo, techo y columnas sueltas: por los
+         lados y por el fondo se veia el vacio del renderer. Estas
+         piezas cierran la caja. Todas son cajas, planos o toros: la
+         arquitectura sale de repetir tres piezas (muro, pilastra,
+         arco), no de mallas nuevas por elemento. */
+      sideWall: new THREE.BoxGeometry(0.4, 5.2, 19),
+      backWall: new THREE.BoxGeometry(7.2, 5.2, 0.4),
+      cornice: new THREE.BoxGeometry(0.26, 0.30, 19),
+      coveStrip: new THREE.BoxGeometry(0.10, 0.09, 18),
+      /* arcada ciega: conecta cada columna con la siguiente para que
+         dejen de leerse como barras verticales independientes */
+      blindArch: new THREE.TorusGeometry(1.02, 0.13, 6, 14, Math.PI),
+      archRing: new THREE.TorusGeometry(1.0, 0.085, 6, 18, Math.PI),
+      wallPilaster: new THREE.BoxGeometry(0.42, 4.2, 0.26),
+      wallLightSlot: new THREE.BoxGeometry(0.16, 3.0, 0.06),
+      facade: buildFacadeGeometry(THREE, 13, 5.2, 2.9, 1.0, [-2.6, 0, 2.6]),
+      vestibuleWall: new THREE.BoxGeometry(0.4, 4.3, 12),
+      chandelierRing: new THREE.TorusGeometry(1.25, 0.07, 6, 30),
+      chandelierDisc: new THREE.CircleGeometry(1.15, 32)
     };
     var mat = {
       /* Piedra casi negra, bronce envejecido y metal oscuro cepillado:
@@ -15703,15 +15747,22 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
          devolver nada- así que cada uno sube un peldaño de valor y
          diferencia rugosidad/metalness para que se note qué es piedra,
          qué es metal y qué es suelo pulido. */
-      pedestal: new THREE.MeshStandardMaterial({ color: 0x241d15, roughness: 0.46, metalness: 0.46 }),
+      pedestal: new THREE.MeshStandardMaterial({ color: 0x352c21, roughness: 0.46, metalness: 0.46 }),
       /* un peldaño más claro y más metálico que el pedestal: es el
          anillo justo donde la pieza se separa del suelo -sin eso, con
          la misma luz encima, pedestal y suelo se leen como un solo
          bloque-. */
       plinth: new THREE.MeshStandardMaterial({ color: 0x372b1c, roughness: 0.34, metalness: 0.68 }),
-      floor: new THREE.MeshStandardMaterial({ color: 0x18140f, roughness: 0.18, metalness: 0.24 }),
-      wall: new THREE.MeshStandardMaterial({ color: 0x231d17, roughness: 0.7, metalness: 0.18 }),
-      ceiling: new THREE.MeshStandardMaterial({ color: 0x18130f, roughness: 0.82, metalness: 0.08 }),
+      /* Suelo y muro suben un peldano de valor. Con la sala abierta
+         daba igual -lo que se veia detras era el vacio-; cerrada, cada
+         superficie tiene que devolver algo o la habitacion se lee
+         igual de negra que el vacio que sustituye. */
+      floor: new THREE.MeshStandardMaterial({ color: 0x342c22, roughness: 0.2, metalness: 0.3 }),
+      wall: new THREE.MeshStandardMaterial({ color: 0x3a322a, roughness: 0.66, metalness: 0.2 }),
+      /* un peldano mas claro que antes: el techo ahora se ve, y a
+         0x18130f devolvia tan poca luz que seguia leyendose como
+         vacio aunque hubiera geometria. */
+      ceiling: new THREE.MeshStandardMaterial({ color: 0x342c22, roughness: 0.82, metalness: 0.08 }),
       wood: new THREE.MeshStandardMaterial({ color: 0x362a20, roughness: 0.48, metalness: 0.5 }),
       bronzeTrim: new THREE.MeshStandardMaterial({
         color: 0x8a6a3a, roughness: 0.36, metalness: 0.8,
@@ -15724,7 +15775,9 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
          ojo hacia el altar sin convertirse en el protagonista. */
       pathGlow: new THREE.MeshStandardMaterial({
         color: 0x2a1c0d, roughness: 0.5, metalness: 0.22,
-        emissive: 0xdb9a4c, emissiveIntensity: 0.34
+        /* 0.34 -> 0.20: con la sala iluminada, la franja del suelo
+           dejaba de guiar el ojo y pasaba a ser lo unico que se veia. */
+        emissive: 0xdb9a4c, emissiveIntensity: 0.20
       }),
       /* emisivos puros: iluminación arquitectónica visible sin sumar
          luces reales al shader (coste cero en móvil). ledGlow un poco
@@ -15732,6 +15785,9 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
          pedestal y empieza el suelo. */
       coveGlow: new THREE.MeshBasicMaterial({ color: 0xe8c393 }),
       ledGlow: new THREE.MeshBasicMaterial({ color: 0xf0bb82 }),
+      /* ranuras verticales del muro del fondo: mas apagadas que la
+         cornisa para que el muro se lea sin competir con el altar. */
+      wallLight: new THREE.MeshBasicMaterial({ color: 0xb78a52 }),
 
       /* Materiales de los conceptos nuevos (compartidos entre piezas).
          Sin environment map, un metal muy puro se ve casi negro en una
@@ -16062,6 +16118,21 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
   function makeOrbit(camera, target, opts) {
     var radius = opts.radius, minR = opts.minR, maxR = opts.maxR;
     var az = opts.az, minPolar = opts.minPolar, maxPolar = opts.maxPolar, polar = opts.polar;
+    /* El azimut tambien se limita cuando se pide: con la sala cerrada,
+       girar sin tope acaba con la camara fuera de la caja mirando el
+       reverso de los muros. Sin minAz/maxAz el giro sigue siendo libre. */
+    var minAz = opts.minAz != null ? opts.minAz : -Infinity;
+    var maxAz = opts.maxAz != null ? opts.maxAz : Infinity;
+
+    /* El giro se estrecha a medida que la camara se acerca: dentro de
+       la nave un giro pequeno ya la deja mirando un muro liso, que
+       llena el encuadre sin contar nada. En el radio de partida el
+       recorrido es completo; en el minimo, solo el eje. */
+    function clampAz() {
+      var span = Math.max(0.001, opts.radius - minR);
+      var k = Math.min(1, Math.max(0, (radius - minR) / span));
+      az = Math.min(maxAz * k, Math.max(minAz * k, az));
+    }
 
     function apply() {
       var sp = Math.sin(polar), cp = Math.cos(polar);
@@ -16077,10 +16148,12 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       drag: function (dx, dy) {
         az -= dx * 0.0045;
         polar = Math.min(maxPolar, Math.max(minPolar, polar - dy * 0.0035));
+        clampAz();
         apply();
       },
       zoom: function (delta) {
         radius = Math.min(maxR, Math.max(minR, radius + delta));
+        clampAz();
         apply();
       },
       reset: function () {
@@ -16102,10 +16175,16 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
        -19 unidades-, así que el alcance se estira para que el altar
        siga leyéndose al fondo, apenas atenuado por la distancia. */
     scene.background = new THREE.Color(0x0b0a09);
-    scene.fog = new THREE.Fog(0x0b0a09, 10, 24);
+    /* La niebla ya no tapa la ausencia de fondo -ahora hay muro al
+       fondo-, asi que se estira (10..24 -> 13..40) y se templa un
+       punto: el muro trasero debe llegar atenuado, no disuelto. */
+    scene.fog = new THREE.Fog(0x120e0a, 13, 40);
 
-    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 60);
-    var target = new THREE.Vector3(0, 1.4, -4);
+    /* 42 grados en vertical: encuadre cinematografico sin la
+       deformacion de un gran angular. resize() lo abre lo justo en
+       lienzos estrechos para no cortar la fachada. */
+    var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 80);
+    var target = new THREE.Vector3(0, 1.5, -4);
 
     /* Nivel reducido en pantallas pequeñas: menos DPR, sin
        antialiasing (el coste de MSAA en un móvil de gama media es
@@ -16121,30 +16200,83 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     /* tone mapping: sin esto los metales con luz intensa se queman a
        blanco liso en vez de dar un brillo con degradado agradable. */
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    /* 1.05 -> 1.35: ACES comprime mucho la parte baja de la curva y
+       con la sala cerrada casi todo el encuadre vive ahi. Medido: la
+       franja superior pasaba de RGB 16 (negro a efectos practicos) a
+       RGB 35 solo con esto y con la luz del vestibulo recolocada. */
+    renderer.toneMappingExposure = 1.35;
     if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    /* --- Arquitectura: nave ceremonial axial --------------------
-       Entrada -> columnas/vigas repetidas -> altar de TI al fondo.
-       Piedra casi negra, bronce envejecido, sin muro circular ni
-       mármol beige. Composición en eje, con profundidad real: primer
-       plano (columnas cerca de la cámara), plano medio (bahías de
-       trofeos) y fondo (el altar, iluminado, a media niebla). */
-    var NAVE_Z = -3.5, NAVE_W = 7.2, NAVE_H = 4.4, N_COLS = 5;
+    /* --- Arquitectura: nave ceremonial axial, ahora cerrada ------
+       Vestibulo -> fachada de tres arcos -> nave (columnas, arcada
+       ciega, cornisa, techo) -> muro del fondo con el altar de TI.
+       Antes esto era suelo + techo + columnas sueltas: sin muros
+       laterales ni fondo, la camara veia el vacio del renderer entre
+       columna y columna, y eso era el "negro sin explicacion".
+       Tres planos de profundidad, en este orden desde la camara:
+         1 fachada + jambas      (primer plano, recorta el encuadre)
+         2 columnas + pedestales (plano medio)
+         3 muro del fondo + altar (fondo, a media niebla)
+       NAVE_H sube de 4.4 a 5.2: la columna sigue siendo la misma
+       pieza de 4.4, se escala -no se anade geometria. */
+    var NAVE_Z = -3.5, NAVE_W = 7.2, NAVE_H = 5.2, N_COLS = 5;
+    var COL_H = 4.4;                      /* alto real de kit.geo.column */
+    var WALL_X = 3.85;                    /* eje del muro; cara interior 3.65 */
+    var BACK_Z = -12.75;                  /* muro del fondo */
+    var FACADE_Z = 5.2;                   /* plano frontal de la fachada */
+    var SPRING = 2.4;                     /* arcada ciega de los muros */
+    var FACADE_SPRING = 2.9;              /* fachada: mas alta, deja ver dentro */
 
     var floor = new THREE.Mesh(kit.geo.floor, kit.mat.floor);
     floor.position.set(0, -0.11, NAVE_Z);
+    floor.scale.x = 1.07;                 /* llega bajo los muros: sin junta visible */
     floor.receiveShadow = true;
     scene.add(floor);
 
-    /* franja ceremonial: guía el ojo hacia el altar sin necesitar luz real */
+    /* Franja ceremonial: guia el ojo hacia el altar sin necesitar luz
+       real. Ahora arranca a los pies de la camara y no en el umbral:
+       el suelo del vestibulo era una losa vacia en la parte baja del
+       encuadre -sobre todo en movil, donde el campo vertical es mayor
+       y entra mas suelo- y la franja lo cose con el altar de un solo
+       trazo. Misma pieza, estirada; ninguna geometria nueva. */
     var path = new THREE.Mesh(kit.geo.pathStrip, kit.mat.pathGlow);
-    path.position.set(0, 0.001, NAVE_Z);
+    path.scale.z = 1.45;
+    path.position.set(0, 0.001, 0.65);
     scene.add(path);
 
     var ceiling = new THREE.Mesh(kit.geo.ceiling, kit.mat.ceiling);
     ceiling.position.set(0, NAVE_H, NAVE_Z);
+    ceiling.scale.x = 1.05;
     scene.add(ceiling);
+
+    /* muros laterales, cornisa y cala de luz: el muro cierra, la
+       cornisa ata las columnas entre si y la cala es luz "indirecta"
+       hecha con material emisivo -cero luces dinamicas nuevas, que es
+       la parte cara. */
+    [-1, 1].forEach(function (side) {
+      var w = new THREE.Mesh(kit.geo.sideWall, kit.mat.wall);
+      w.position.set(side * WALL_X, NAVE_H / 2 - 0.1, NAVE_Z);
+      w.receiveShadow = true;
+      scene.add(w);
+      var corn = new THREE.Mesh(kit.geo.cornice, kit.mat.bronzeTrim);
+      corn.position.set(side * 3.52, 3.62, NAVE_Z);
+      scene.add(corn);
+      var cove = new THREE.Mesh(kit.geo.coveStrip, kit.mat.coveGlow);
+      cove.position.set(side * 3.5, NAVE_H - 0.38, NAVE_Z);
+      scene.add(cove);
+    });
+
+    /* arcada ciega: un arco por bahia contra cada muro. Es lo que
+       convierte cinco pares de barras verticales en una arquitectura:
+       cada columna queda unida a la siguiente. */
+    [2.7, 0.1, -2.5, -5.1, -7.7, -10.3].forEach(function (bz) {
+      [-1, 1].forEach(function (side) {
+        var arch = new THREE.Mesh(kit.geo.blindArch, kit.mat.wall);
+        arch.position.set(side * 3.58, SPRING, bz);
+        arch.rotation.y = side * Math.PI / 2;
+        scene.add(arch);
+      });
+    });
 
     /* columnas + vigas: misma pieza repetida, deja la última tirada
        (hacia el altar) despejada a propósito -espacio negativo antes
@@ -16152,15 +16284,115 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     for (var ci = 0; ci < N_COLS; ci++) {
       var cz = 4 - ci * 2.6;
       var beam = new THREE.Mesh(kit.geo.beam, kit.mat.wood);
-      beam.position.set(0, NAVE_H - 0.22, cz);
+      beam.position.set(0, NAVE_H - 0.25, cz);
       scene.add(beam);
       [-1, 1].forEach(function (side) {
         var col = new THREE.Mesh(kit.geo.column, kit.mat.wall);
+        col.scale.y = NAVE_H / COL_H;
         col.position.set(side * (NAVE_W / 2 - 0.3), NAVE_H / 2 - 0.1, cz);
         col.castShadow = true; col.receiveShadow = true;
         scene.add(col);
       });
     }
+
+    /* lampara central: aro de bronce + disco emisivo. Cierra el techo
+       por el centro, que es donde mas se notaba el hueco. No lleva luz
+       propia: la que hace el trabajo es coveA, movida justo encima. */
+    var chandRing = new THREE.Mesh(kit.geo.chandelierRing, kit.mat.bronzeTrim);
+    chandRing.position.set(0, NAVE_H - 0.35, -2.0);
+    chandRing.rotation.x = Math.PI / 2;
+    scene.add(chandRing);
+    var chandDisc = new THREE.Mesh(kit.geo.chandelierDisc, kit.mat.pathGlow);
+    chandDisc.position.set(0, NAVE_H - 0.34, -2.0);
+    chandDisc.rotation.x = Math.PI / 2;
+    scene.add(chandDisc);
+
+    /* --- Muro del fondo ------------------------------------------
+       Sustituye a la fila de monolitos que habia detras del altar:
+       hacen el mismo trabajo (cerrar el eje) pero un muro con
+       pilastras y ranuras de luz da fondo a los pedestales en vez de
+       dejarlos recortados contra la nada. */
+    var backWall = new THREE.Mesh(kit.geo.backWall, kit.mat.wall);
+    backWall.position.set(0, NAVE_H / 2 - 0.1, BACK_Z);
+    backWall.receiveShadow = true;
+    scene.add(backWall);
+    [-2.85, -0.95, 0.95, 2.85].forEach(function (px) {
+      var pil = new THREE.Mesh(kit.geo.wallPilaster, kit.mat.pedestal);
+      pil.position.set(px, 2.05, BACK_Z + 0.32);
+      scene.add(pil);
+    });
+    [-1.9, 0, 1.9].forEach(function (sx) {
+      var slot = new THREE.Mesh(kit.geo.wallLightSlot, kit.mat.wallLight);
+      slot.position.set(sx, 1.85, BACK_Z + 0.24);
+      scene.add(slot);
+    });
+    var backCorn = new THREE.Mesh(kit.geo.beam, kit.mat.bronzeTrim);
+    backCorn.position.set(0, 4.25, BACK_Z + 0.3);
+    scene.add(backCorn);
+
+    /* --- Fachada: el espectador mira DESDE fuera hacia dentro -----
+       Tres vanos en arco. No cierra la sala por delante: la enmarca.
+       De paso rellena la franja superior del encuadre, que era el
+       vacio negro mas grande de la escena. */
+    var facade = new THREE.Mesh(kit.geo.facade, kit.mat.wall);
+    facade.position.set(0, 0, FACADE_Z);
+    facade.receiveShadow = true;
+    scene.add(facade);
+    [-2.6, 0, 2.6].forEach(function (ax) {
+      [FACADE_Z + 0.02, FACADE_Z + 0.48].forEach(function (az) {
+        var ring = new THREE.Mesh(kit.geo.archRing, kit.mat.bronzeTrim);
+        ring.position.set(ax, FACADE_SPRING, az);
+        scene.add(ring);
+      });
+    });
+    /* cornisa de la fachada: la viga de la nave, estirada y en bronce.
+       Rompe la banda lisa que quedaba entre la clave de los arcos y el
+       techo del vestibulo. */
+    var facadeCornice = new THREE.Mesh(kit.geo.beam, kit.mat.bronzeTrim);
+    facadeCornice.scale.set(1.76, 0.8, 0.9);
+    facadeCornice.position.set(0, 4.08, 5.05);
+    scene.add(facadeCornice);
+
+    /* umbral: la viga aplastada contra el suelo, reutilizada como
+       linea de bronce encendida en el paso -marca donde empieza la
+       sala sin gastar una luz. */
+    var threshold = new THREE.Mesh(kit.geo.beam, kit.mat.pathGlow);
+    threshold.scale.set(0.97, 0.03, 1.1);
+    threshold.position.set(0, 0.006, FACADE_Z + 0.25);
+    scene.add(threshold);
+
+    /* --- Vestibulo: el suelo donde se apoya la camara -------------
+       Sin esto la camara flota sobre el vacio y la fachada se recorta
+       contra negro. Reutiliza suelo y techo de la nave a escala. */
+    var vestFloor = new THREE.Mesh(kit.geo.floor, kit.mat.floor);
+    vestFloor.scale.set(1.81, 1, 0.64);
+    vestFloor.position.set(0, -0.13, 11.7);
+    vestFloor.receiveShadow = true;
+    scene.add(vestFloor);
+    var vestCeil = new THREE.Mesh(kit.geo.ceiling, kit.mat.ceiling);
+    vestCeil.scale.set(1.76, 1, 0.64);
+    vestCeil.position.set(0, 4.2, 11.7);
+    scene.add(vestCeil);
+    /* Tres vigas cruzando el techo del vestibulo. Son la franja alta
+       del encuadre: sin ellas ese tercio es un plano liso sin escala,
+       que es exactamente el "vacio negro" del que venimos. Se probo
+       antes una banda emisiva y salia una barra blanca de lado a lado,
+       mas cerca de un elemento de interfaz que de arquitectura. */
+    [6.3, 8.1, 9.9].forEach(function (bz) {
+      var vb = new THREE.Mesh(kit.geo.beam, kit.mat.wood);
+      vb.scale.set(1.72, 0.75, 0.9);
+      vb.position.set(0, 3.95, bz);
+      scene.add(vb);
+    });
+    [-1, 1].forEach(function (side) {
+      var vw = new THREE.Mesh(kit.geo.vestibuleWall, kit.mat.wall);
+      vw.position.set(side * 6.7, 2.05, 11.7);
+      scene.add(vw);
+      var vc = new THREE.Mesh(kit.geo.coveStrip, kit.mat.coveGlow);
+      vc.scale.z = 0.66;
+      vc.position.set(side * 6.4, 4.02, 11.7);
+      scene.add(vc);
+    });
 
     /* --- Altar de TI: eje principal, al fondo de la nave --------- */
     var ALTAR_Z = -10.6;
@@ -16193,13 +16425,16 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     var tiBack = new THREE.PointLight(0xffcf8a, 0.85, 7, 1.4);
     tiBack.position.set(0, 2.0, ALTAR_Z - 0.9);
     scene.add(tiBack);
-    /* remate: fila de monolitos cerrando la nave tras el halo, en vez
-       de un muro nuevo (reutiliza `column`) */
-    for (var bi = -2; bi <= 2; bi++) {
+    /* remate: dos contrafuertes flanqueando el altar. Antes eran
+       cinco monolitos haciendo de muro improvisado; ahora hay muro de
+       verdad detras, asi que los tres centrales sobraban -tapaban las
+       ranuras de luz del fondo. */
+    [-2.4, 2.4].forEach(function (bx) {
       var back = new THREE.Mesh(kit.geo.column, kit.mat.wall);
-      back.position.set(bi * 1.5, NAVE_H / 2 - 0.1, ALTAR_Z - 2.4);
+      back.scale.y = 0.92;
+      back.position.set(bx, NAVE_H / 2 - 0.35, ALTAR_Z - 1.6);
       scene.add(back);
-    }
+    });
 
     /* --- Iluminación -------------------------------------------
        Seis capas, cada una con un trabajo distinto -ninguna sola
@@ -16212,20 +16447,29 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
          4 foco por trofeo: presupuesto ampliado
          5 luz de contorno fría: separa siluetas del fondo negro
          6 hero de TI: foco cálido + contraluz propio */
-    scene.add(new THREE.AmbientLight(0xf2e6d2, 0.78));
-    scene.add(new THREE.HemisphereLight(0xfff1dc, 0x33291d, 0.66));
+    scene.add(new THREE.AmbientLight(0xf2e6d2, 1.55));
+    scene.add(new THREE.HemisphereLight(0xfff1dc, 0x3d3226, 1.25));
 
     /* 2 · wash arquitectónico: alcance estirado para cubrir los 19m de
        nave (antes 14, se apagaba a media sala) y un tercer punto que
        cierra el tramo hacia el altar que antes quedaba a oscuras. */
-    var coveA = new THREE.PointLight(0xffd9a8, 1.0, 22, 1.6);
-    coveA.position.set(-2.6, 3.6, 3.0);
+    /* coveA pasa a ser la lampara central: es la unica luz que llega
+       al techo y a la parte alta de los muros, que hasta ahora no
+       existian y por tanto no habia que iluminar. */
+    var coveA = new THREE.PointLight(0xffd9a8, 1.25, 24, 1.5);
+    coveA.position.set(0, 4.2, -2.0);
     scene.add(coveA);
-    var coveB = new THREE.PointLight(0xffdcae, 0.95, 22, 1.6);
-    coveB.position.set(2.6, 3.6, -4.0);
+    /* coveB pasa al vestibulo: rasa la cara exterior de la fachada,
+       que si no queda en sombra total y con ella el primer plano
+       entero del encuadre. Esta a y=2.9 y no pegada al techo: a 0.2 m
+       del artesonado el angulo de incidencia era casi rasante y la
+       superficie devolvia casi nada por mucho que subiera el numero.
+       Bajarla 1.1 m multiplico por diez lo que llega al techo. */
+    var coveB = new THREE.PointLight(0xffdcae, 3.2, 28, 1.4);
+    coveB.position.set(0, 2.6, 8.6);
     scene.add(coveB);
-    var coveC = new THREE.PointLight(0xffd2a0, 0.9, 20, 1.6);
-    coveC.position.set(-2.2, 3.4, -8.6);
+    var coveC = new THREE.PointLight(0xffd2a0, 1.0, 22, 1.6);
+    coveC.position.set(-1.6, 3.4, -9.4);
     scene.add(coveC);
 
     /* 5 · contorno frío: un único punto tenue, temperatura distinta al
@@ -16240,8 +16484,8 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       scene.add(rim);
     }
 
-    var key = new THREE.SpotLight(0xfff4e2, 1.5, 22, Math.PI / 3.8, 0.55, 1.1);
-    key.position.set(0.6, 4.4, 3.4);
+    var key = new THREE.SpotLight(0xfff4e2, 1.9, 24, Math.PI / 3.2, 0.55, 1.1);
+    key.position.set(0.6, 4.9, 3.4);
     key.target.position.set(0, 1.2, -1);
     key.castShadow = true;
     key.shadow.mapSize.set(1024, 1024);
@@ -16270,7 +16514,11 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     });
 
     var placed = [];
-    if (featured) placed.push({ tr: featured, pos: new THREE.Vector3(0, 0, 4.6), primary: true });
+    /* 4.6 caia justo sobre el plano de la fachada (z 5.2): la pieza
+       destacada se retranquea para quedar dentro de la sala, y lo
+       suficiente para no comerse el eje -desde la entrada tapaba la
+       franja ceremonial y media nave. */
+    if (featured) placed.push({ tr: featured, pos: new THREE.Vector3(0, 0, 2.4), primary: true });
     if (ti) placed.push({ tr: ti, pos: new THREE.Vector3(0, 0.67, ALTAR_Z), primary: false, ceremonial: true });
     majors.forEach(function (tr, i) {
       var side = i % 2 === 0 ? -1 : 1;
@@ -16283,7 +16531,7 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       var row = Math.floor(i / 2);
       placed.push({
         tr: tr, minor: true,
-        pos: new THREE.Vector3(side * (NAVE_W / 2 - 0.55), 0, 5.2 - row * 1.3)
+        pos: new THREE.Vector3(side * 2.85, 0, 4.0 - row * 1.3)
       });
     });
 
@@ -16314,6 +16562,19 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       }
       if (slot.minor) group.scale.setScalar(0.72);
 
+      /* Charco de luz en el suelo: sin el, el pedestal se apoya en una
+         superficie que no reacciona y la pieza parece pegada encima en
+         vez de expuesta dentro de la sala. Reutiliza el disco del halo
+         del altar a escala pequena. Los bloqueados no llevan: su
+         ausencia es parte de como se leen. */
+      if (!tr.locked) {
+        var pool = new THREE.Mesh(kit.geo.haloDisc, kit.mat.pathGlow);
+        pool.rotation.x = -Math.PI / 2;
+        pool.scale.setScalar(slot.minor ? 0.42 : 0.58);
+        pool.position.set(slot.pos.x, 0.004, slot.pos.z);
+        scene.add(pool);
+      }
+
       if (slot.ceremonial || (!slot.minor && spotsUsed < SPOT_BUDGET)) {
         if (!slot.ceremonial) spotsUsed++;
         /* La luz ceremonial de TI es la única excepción al presupuesto
@@ -16339,9 +16600,25 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       groups.push(group);
     });
 
+    /* Camara: de "maqueta vista desde arriba" a "de pie en el
+       vestibulo". Antes orbitaba a 9.5 con polar 1.25, lo que la
+       dejaba a y=4.4 -exactamente la altura del techo-: por eso el
+       techo no se veia y encima quedaba vacio. Ahora arranca a
+       (0, 3.3, 12): dentro del vestibulo, por debajo de su artesonado
+       y mirando la fachada de frente.
+       Los limites se estrechan a proposito -la sala ahora es una caja
+       cerrada y fuera de ese cono la camara la ve por detras-. Sigue
+       habiendo orbita, zoom y reset; lo que cambia es el recorrido.
+       En pantallas pequenas el radio sube: el campo horizontal es
+       menor y desde 16 la fachada se salia del encuadre. */
     var orbit = makeOrbit(camera, target, {
-      radius: 9.5, minR: 4, maxR: 15,
-      az: 0, polar: 1.25, minPolar: 0.75, maxPolar: 1.5
+      radius: isSmallScreen ? 16.5 : 15.4, minR: 8, maxR: isSmallScreen ? 18 : 17,
+      /* En movil el lienzo es casi cuadrado y el campo vertical se
+         abre a 58 grados: con la misma inclinacion la fachada quedaba
+         baja y un cuarto del encuadre era techo. La camara baja medio
+         metro y la recentra. */
+      az: 0, polar: isSmallScreen ? 1.502 : 1.4575, minPolar: 1.415, maxPolar: 1.52,
+      minAz: -0.38, maxAz: 0.38
     });
 
     /* Entrada de cámara: un acercamiento suave desde un plano algo más
@@ -16351,8 +16628,8 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
        estado interno de `orbit`: drag/zoom/reset siguen intactos, solo
        se interpola camera.position hacia donde ya estaba. */
     var introTarget = camera.position.clone();
-    var introStart = introTarget.clone().multiplyScalar(1.22);
-    introStart.y = introTarget.y + 1.1;
+    var introStart = introTarget.clone().multiplyScalar(1.10);
+    introStart.y = introTarget.y + 0.35;
     var cameraIntroDone = reducedMotion;
     var cameraIntroStart = performance.now();
     if (!reducedMotion) { camera.position.copy(introStart); camera.lookAt(target); }
@@ -16459,9 +16736,20 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     canvas.addEventListener('touchmove', onTouchMove, { passive: false });
 
     /* tamaño: se ajusta al contenedor, DPR limitado. */
+    /* El FOV de three es vertical, asi que en un lienzo estrecho el
+       campo horizontal se encoge y la fachada se sale por los lados.
+       Se abre el vertical solo lo justo para recuperar ~62 grados
+       horizontales, con tope en 58 para no caer en el gran angular. */
+    var BASE_FOV = 42, MIN_H_FOV = 62, MAX_V_FOV = 58;
+    function fovFor(aspect) {
+      var hFov = 2 * Math.atan(Math.tan(BASE_FOV * Math.PI / 360) * aspect) * 180 / Math.PI;
+      if (hFov >= MIN_H_FOV) return BASE_FOV;
+      return Math.min(MAX_V_FOV, 2 * Math.atan(Math.tan(MIN_H_FOV * Math.PI / 360) / aspect) * 180 / Math.PI);
+    }
     function resize() {
       var w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
       camera.aspect = w / h;
+      camera.fov = fovFor(camera.aspect);
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
       invalidate();
