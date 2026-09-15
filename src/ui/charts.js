@@ -1,4 +1,12 @@
 /* ============================================================
+   LEGACY — NO EDITAR. Congelado el 31 ago 2026.
+   ------------------------------------------------------------
+   Lo que se publica es dist/index.html. Este archivo ya no forma
+   parte del producto ni de los tests: le faltan, entre otras
+   cosas, el mercado de agentes libres, las estadísticas de héroes
+   y 19 equipos del catálogo. Ver ARCHITECTURE.md.
+   ============================================================ */
+/* ============================================================
    UI / CHARTS — gráficos SVG sin dependencias
    ------------------------------------------------------------
    El gráfico de trayectoria es el mapa de la carrera: se ve de un

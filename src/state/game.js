@@ -1,4 +1,12 @@
 /* ============================================================
+   LEGACY — NO EDITAR. Congelado el 31 ago 2026.
+   ------------------------------------------------------------
+   Lo que se publica es dist/index.html. Este archivo ya no forma
+   parte del producto ni de los tests: le faltan, entre otras
+   cosas, el mercado de agentes libres, las estadísticas de héroes
+   y 19 equipos del catálogo. Ver ARCHITECTURE.md.
+   ============================================================ */
+/* ============================================================
    STATE / GAME — fachada única entre la interfaz y el motor
    ------------------------------------------------------------
    La UI no toca el motor directamente. Cada acción muta el estado

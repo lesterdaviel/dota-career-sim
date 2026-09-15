@@ -15,8 +15,9 @@ No es una web de estadísticas ni un clon de otro juego. El núcleo es:
 
 ## Cómo jugar
 
-**Opción 1 — sin nada instalado:** abre `index.html` con doble clic. El juego no usa
-build, ni dependencias, ni servidor.
+**Opción 1 — sin nada instalado:** abre `dist/index.html` con doble clic. El juego no
+usa build, ni dependencias, ni servidor. (El `index.html` de la raíz es una versión
+modular congelada, no lo que se juega: ver `ARCHITECTURE.md`.)
 
 **Opción 2 — servido por HTTP** (útil si tu navegador restringe `localStorage` en `file://`):
 
@@ -33,8 +34,8 @@ La partida se guarda sola en `localStorage` después de cada acción.
 ## Cómo funciona la simulación
 
 ### Azar controlado, no arbitrario
-Nunca hay «azar puro → resultado». El generador (`src/core/rng.js`) solo produce
-números; las probabilidades las fija el contexto: habilidad, potencial, edad, forma,
+Nunca hay «azar puro → resultado». El generador solo produce números; las
+probabilidades las fija el contexto: habilidad, potencial, edad, forma,
 equipo, sinergia, rival, moral, decisiones, reputación y oportunidad. Un equipo
 inferior siempre puede ganar un mapa (la probabilidad está acotada entre 10% y 90%),
 pero el superior tiene ventaja real.
@@ -67,7 +68,7 @@ estancamientos, breakouts, malas temporadas, regresiones, primes y declives. Las
 Las cinco posiciones generan **líneas estadísticas distintas** y se evalúan con
 **criterios distintos**. Un Hard Support puede firmar una temporada excepcional con 3
 kills por mapa; un Carry con muchas kills, mal farm y muchas muertes, no. Los pesos
-del rating viven en `src/data/roles.js` (`ratingSpec`) y nunca se muestran al usuario.
+del rating (`ratingSpec`) nunca se muestran al usuario.
 
 La valoración general tampoco es una media: cada rol pondera los ocho atributos de
 forma diferente (`weights`).
@@ -114,48 +115,38 @@ animar: si el navegador pausa las animaciones, el dato sigue siendo correcto.
 
 ## Arquitectura
 
-Sin build, sin dependencias, sin framework. Scripts clásicos que cuelgan de un único
-namespace `DCS`, separados por capa:
-
-```
-src/
-  core/      rng.js util.js runtime.js        azar determinista y helpers
-  data/      roles.js archetypes.js world.js  contenido puro (sin lógica de juego)
-             tournaments.js events.js
-  engine/    player.js progression.js         simulación
-             world.js match.js stats.js
-             performance.js tournaments.js
-             market.js events.js season.js
-             retirement.js
-  state/     store.js game.js                 persistencia y fachada para la UI
-  ui/        format.js components.js          interfaz
-             anim.js charts.js
-             screens.home.js screens.career.js app.js
-tools/       balance.html balance.js          test de balance
-             serve.ps1                        servidor estático opcional
-```
+Sin build, sin dependencias, sin framework. Todo el juego —motor, datos, interfaz,
+estilos e i18n— vive en un único archivo autocontenido, `dist/index.html`, con más de
+40 bloques `<script>` colgando de un único namespace `DCS`. Se edita en
+`cursor-merge/latest-cursor2.html` y se publica copiándolo tal cual a `dist/index.html`
+(sin build). El detalle completo, qué archivos son legacy y por qué, está en
+`ARCHITECTURE.md` — léelo antes de tocar código.
 
 Reglas que sigue el código:
 
 - La UI **nunca** toca el motor: pasa siempre por `DCS.game`.
-- `data/` no contiene lógica de simulación; `engine/` no contiene HTML.
+- Los datos no contienen lógica de simulación; el motor no contiene HTML.
 - El estado completo de una partida es serializable a JSON.
 
 ### Preparado para ampliar (sin implementar en V1)
 
 Equipos y jugadores reales, héroes y hero pool real, draft, parches, base de datos,
 usuarios, rankings, logros, sharing, multijugador y narrativa por IA. La separación de
-capas está pensada para eso: por ejemplo, sustituir `data/world.js` por un dataset real
-no obliga a tocar el motor.
+capas está pensada para eso: por ejemplo, sustituir el dataset de mundo por uno real no
+obliga a tocar el motor.
 
 ---
 
-## Test de balance
+## Tests
 
-`tools/balance.html` simula cientos de carreras completas con un jugador automático y
-comprueba que los desenlaces sean **diversos**. No toca tu partida guardada.
+Antes de publicar: `node tools/finance-test.js`, `node tools/trophy-test.js` y
+`node tools/tournament-test.js`. Los tres cargan `dist/index.html` (el artefacto real,
+vía `tools/load-dist.js`) y simulan cientos de carreras completas comprobando
+contabilidad, sala de trofeos e invariantes del motor de torneos. `tools/balance.html`
+es un test de balance más antiguo que corre sobre `src/`, congelado desde el 31 de
+agosto: sus cifras ya no describen el juego publicado (ver `ARCHITECTURE.md`).
 
-Resultado de la última pasada (600 carreras):
+Resultado de la última pasada de balance sobre `src/` (600 carreras, histórico):
 
 | Desenlace | % |
 |---|---|
@@ -197,3 +188,6 @@ Una carrera extraordinaria se siente especial porque no ocurre casi nunca.
   series, mapas ganados y perdidos y longitud de cada resultado (comprobado sobre
   todos los torneos de 600 carreras).
 - No se puede cerrar el año dejando ofertas sin responder.
+- Un equipo con más derrotas que victorias en la fase de grupos nunca pasa a
+  playoffs, sea cual sea el formato del torneo (comprobado sobre 120 carreras y
+  más de 5.500 registros de torneo en `tools/tournament-test.js`).

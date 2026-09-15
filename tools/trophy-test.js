@@ -1,25 +1,11 @@
 /* Sala de trofeos: lectura del historial, sin mutar simulación. */
-const fs = require('fs');
-const vm = require('vm');
-const path = require('path');
-global.window = global;
-global.document = { readyState: 'loading', addEventListener() {}, createElement() { return { getContext() { return null; }, getExtension() { return null; } }; } };
-global.navigator = { language: 'es-ES' };
 const mem = {};
 global.localStorage = { setItem: (k, v) => { mem[k] = v; }, getItem: k => mem[k] || null, removeItem: k => { delete mem[k]; } };
 global.crypto = { getRandomValues: a => a.fill(123456789) };
 
-const files = [
-  'src/core/rng.js', 'src/core/util.js', 'src/core/runtime.js',
-  'src/data/roles.js', 'src/data/archetypes.js', 'src/data/world.js', 'src/data/flags.js',
-  'src/data/teams.js', 'src/data/tournaments.js', 'src/ui/format.js', 'src/data/events.js',
-  'src/data/finance.js', 'src/engine/stats.js', 'src/engine/player.js', 'src/engine/world.js',
-  'src/engine/match.js', 'src/engine/performance.js', 'src/engine/progression.js',
-  'src/engine/tournaments.js', 'src/engine/market.js', 'src/engine/events.js',
-  'src/engine/finance.js', 'src/engine/retirement.js', 'src/engine/season.js',
-  'src/engine/trophies.js', 'src/state/store.js', 'src/state/game.js'
-];
-files.forEach(f => vm.runInThisContext(fs.readFileSync(path.join(__dirname, '..', f), 'utf8'), { filename: f }));
+/* Se carga dist/index.html, el artefacto que se publica. src/ dejó de
+   representar el producto el 31 ago 2026: ver tools/load-dist.js. */
+require('./load-dist.js')();
 DCS.store.setSilent(true);
 
 function assert(cond, msg) { if (!cond) throw new Error(msg); }
@@ -32,9 +18,14 @@ function title(o) {
 }
 
 function emptyState() {
-  return { history: [], season: { tournaments: [] }, player: { role: 'mid' }, trophyRoom: { seen: {} } };
+  /* Los vistos viven en career.trophyRoomSeen (array de ids). El
+     trophyRoom.seen de src/ ya no existe en el motor publicado. */
+  return { history: [], season: { tournaments: [] }, player: { role: 'mid' }, career: { trophyRoomSeen: [] } };
 }
 
+/* El motor publicado devuelve `design` (id de la serie: dreamleague,
+   ti, esl_one…) donde src/ devolvía `category`. Las aserciones siguen
+   la forma que se publica. */
 /* vacío */
 assert(DCS.engine.trophies.list(emptyState()).length === 0, 'vacío debe ser 0');
 
@@ -45,7 +36,7 @@ assert(DCS.engine.trophies.list(emptyState()).length === 0, 'vacío debe ser 0')
   const list = DCS.engine.trophies.list(s);
   assert(list.length === 1, 'un título');
   assert(list[0].id === 'ev1', 'id estable');
-  assert(list[0].category === 'dreamleague', 'categoría DreamLeague');
+  assert(list[0].design === 'dreamleague', 'diseño DreamLeague');
 }
 
 /* clasificatorio no cuenta */
@@ -66,7 +57,7 @@ assert(DCS.engine.trophies.list(emptyState()).length === 0, 'vacío debe ser 0')
   }];
   const list = DCS.engine.trophies.list(s);
   assert(list.length === 2, 'dos títulos');
-  assert(list[0].category === 'ti', 'TI ocupa el lugar principal');
+  assert(list[0].design === 'ti', 'TI ocupa el lugar principal');
 }
 
 /* mismo torneo, dos temporadas */
@@ -100,35 +91,34 @@ assert(DCS.engine.trophies.list(emptyState()).length === 0, 'vacío debe ser 0')
   assert(item.prestige == null, 'prestigio ausente no se inventa');
 }
 
-/* celebración: markSeen apaga fresh; recargar no duplica */
+/* celebración: lo pendiente de celebrar es newSinceLastVisit, no un
+   flag por trofeo. markSeen lo saca de la lista y no duplica ids. */
 {
   const s = emptyState();
   s.history = [{ year: 2026, role: 'mid', tournaments: [title({ id: 'ev-new', name: 'Major' })] }];
-  assert(DCS.engine.trophies.list(s)[0].fresh === true, 'nuevo no visto');
-  assert(DCS.engine.trophies.markSeen(s, ['ev-new']) === true, 'marca seen');
-  assert(DCS.engine.trophies.list(s)[0].fresh === false, 'ya visto');
-  assert(DCS.engine.trophies.markSeen(s, ['ev-new']) === false, 'segunda marca no cambia');
+  assert(DCS.engine.trophies.newSinceLastVisit(s).length === 1, 'nuevo sin ver');
+  DCS.engine.trophies.markSeen(s, ['ev-new']);
+  assert(DCS.engine.trophies.newSinceLastVisit(s).length === 0, 'ya visto');
+  DCS.engine.trophies.markSeen(s, ['ev-new']);
+  assert(DCS.engine.trophies.seenIds(s).length === 1, 'segunda marca no duplica');
 }
 
-/* migrate de partida vieja: no celebra títulos previos */
+/* un título que ya estaba visto no vuelve a celebrarse, y uno nuevo sí */
 {
-  const s = {
-    history: [{ year: 2025, role: 'carry', tournaments: [title({ id: 'legacy-1', name: 'Liga' })] }],
-    season: { tournaments: [] }
-  };
-  DCS.engine.trophies.migrate(s);
-  assert(s.trophyRoom && s.trophyRoom.seen['legacy-1'], 'migrate marca vistos');
-  assert(DCS.engine.trophies.list(s)[0].fresh === false, 'partida vieja sin celebración');
-  DCS.engine.trophies.migrate(s);
+  const s = emptyState();
+  s.history = [{ year: 2025, role: 'carry', tournaments: [title({ id: 'legacy-1', name: 'Liga' })] }];
+  DCS.engine.trophies.markSeen(s, DCS.engine.trophies.list(s).map(x => x.id));
+  assert(DCS.engine.trophies.newSinceLastVisit(s).length === 0, 'historial ya visto no celebra');
   s.history[0].tournaments.push(title({ id: 'legacy-2', name: 'Copa 2' }));
-  assert(DCS.engine.trophies.list(s).filter(x => x.fresh).length === 1, 'título nuevo sí es fresh');
+  const nuevos = DCS.engine.trophies.newSinceLastVisit(s);
+  assert(nuevos.length === 1 && nuevos[0].id === 'legacy-2', 'solo el título nuevo celebra');
 }
 
 /* ESL por nombre, sin inventar el torneo */
 {
   const s = emptyState();
   s.history = [{ year: 2026, role: 'offlane', tournaments: [title({ id: 'esl1', name: 'ESL One Birmingham', series: 'esl_one' })] }];
-  assert(DCS.engine.trophies.list(s)[0].category === 'esl', 'categoría ESL si el historial lo trae');
+  assert(DCS.engine.trophies.list(s)[0].design === 'esl_one', 'diseño ESL si el historial lo trae');
 }
 
 /* persistencia: load no pierde trophyRoom.seen */
@@ -140,8 +130,8 @@ assert(DCS.engine.trophies.list(emptyState()).length === 0, 'vacío debe ser 0')
   DCS.store.save(state);
   const loaded = DCS.store.load();
   DCS.store.setSilent(true);
-  assert(loaded.trophyRoom.seen['persist-1'], 'seen sobrevive al load');
+  assert(DCS.engine.trophies.seenIds(loaded).indexOf('persist-1') >= 0, 'seen sobrevive al load');
   assert(DCS.engine.trophies.list(loaded).some(x => x.id === 'persist-1'), 'el título sigue en el historial');
 }
 
-console.log('OK: sala de trofeos — vacío, uno, varios, TI, duplicados de temporada, persistencia y migrate.');
+console.log('OK: sala de trofeos — vacío, uno, varios, TI, duplicados de temporada, celebración y persistencia.');

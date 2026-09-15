@@ -1,14 +1,20 @@
 /* 200 carreras completas con cinco políticas; falla ante cualquier descuadre. */
-const fs=require('fs'),vm=require('vm'),path=require('path');global.window=global;global.document={readyState:'loading',addEventListener(){}};
 const mem={};global.localStorage={setItem:(k,v)=>mem[k]=v,getItem:k=>mem[k]||null,removeItem:k=>delete mem[k]};global.crypto={getRandomValues:a=>a.fill(123456789)};
-const files=['src/core/rng.js','src/core/util.js','src/core/runtime.js','src/data/roles.js','src/data/archetypes.js','src/data/world.js','src/data/flags.js','src/data/teams.js','src/data/tournaments.js','src/ui/format.js','src/data/events.js','src/data/finance.js','src/engine/stats.js','src/engine/player.js','src/engine/world.js','src/engine/match.js','src/engine/performance.js','src/engine/progression.js','src/engine/tournaments.js','src/engine/market.js','src/engine/events.js','src/engine/finance.js','src/engine/retirement.js','src/engine/season.js','src/engine/trophies.js','src/state/store.js','src/state/game.js'];
-files.forEach(f=>vm.runInThisContext(fs.readFileSync(path.join(__dirname,'..',f),'utf8'),{filename:f}));DCS.store.setSilent(true);
+/* Se carga dist/index.html, el artefacto que se publica. src/ dejó de
+   representar el producto el 31 ago 2026: ver tools/load-dist.js. */
+require('./load-dist.js')();
+DCS.store.setSilent(true);
 const target={cash:null,conservative:'funds',risky:'tech',property:'realEstate',luxury:'lifestyle'};
 function offers(s){if(!s.offers.length)return;let best=s.offers.slice().sort((a,b)=>b.salary-a.salary)[0];DCS.engine.market.acceptOffer(s,best);s.offers=[];}
 function allocate(s,p){let cat=target[p];if(!cat)return;let w=DCS.engine.finance.pull(s);while(w.cash>=25000){let n=w.cash>=100000?100000:25000;let out=p==='luxury'?DCS.engine.finance.luxury(s,n):DCS.engine.finance.invest(s,cat,n);if(!out.ok)break;}}
 function run(seed,policy){let s=DCS.store.newState({seed,name:'Test',nick:'test',nationality:'España',region:'weu',role:'mid',archetype:'mechanical'}),guard=0;DCS.game.state=s;
- while(!s.finished&&guard++<700){if(s.pending){if(s.pending.type==='event')DCS.engine.season.resolvePendingEvent(s,0);else if(s.pending.type==='wealth')DCS.engine.finance.resolveSpecial(s,false);else{s.pending=null;s.career.lastRetirementPrompt=s.year;}continue;}
-  let ph=s.season.phase;DCS.engine.season.advance(s);if(ph==='review'||ph==='yearEnd')allocate(s,policy);if(ph==='market')offers(s);}
+ while(!s.finished&&guard++<2000){if(s.pending){if(s.pending.type==='event')DCS.engine.season.resolvePendingEvent(s,0);else if(s.pending.type==='wealth')DCS.engine.finance.resolveSpecial(s,false);else if(s.pending.type==='tournament'){DCS.engine.season.playLive(s,true);s.pending=null;if(s.season.liveTour&&s.season.liveTour.done)DCS.engine.season.continueCompetition(s);}else{s.pending=null;s.career.lastRetirementPrompt=s.year;}continue;}
+  let ph=s.season.phase;let out=DCS.engine.season.advance(s);
+  /* El motor publicado bloquea el avance mientras haya ofertas sin
+     responder, y usa un pending de torneo. src/ no hacía ninguna de las
+     dos cosas: por eso el bucle antiguo se quedaba girando en vacío. */
+  if(out&&out.blocked&&out.reason==='offers'){offers(s);continue;}
+  if(ph==='review'||ph==='yearEnd')allocate(s,policy);if(ph==='market')offers(s);}
  if(!s.finished)DCS.engine.retirement.retire(s,'test');let snap=DCS.engine.finance.snapshot(s),sum=snap.cash+snap.buckets.reduce((n,b)=>n+b.value,0);
  if(!isFinite(snap.net)||snap.net<0||sum!==snap.net||s.player.age>38||s.wealth.tickedYear!==s.year-1)throw Error('Integridad '+seed+' '+policy);
  return{worth:snap.net,earn:snap.earnings};}
