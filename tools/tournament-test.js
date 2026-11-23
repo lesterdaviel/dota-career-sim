@@ -117,10 +117,60 @@ function auditRecord(rec) {
   }
 }
 
+/* BALANCE-01: puesto dentro del campo y clasificados coherentes con el corte auditado. */
+function auditCut(rec) {
+  if (!(rec.placement >= 1 && rec.placement <= rec.field)) {
+    violations.push({ type: 'PLACEMENT_OUT_OF_FIELD', key: rec.key, year: rec.year, placement: rec.placement, field: rec.field });
+  }
+  if (rec.audit && rec.qualifiedForPlayoffs === true && rec.audit.advanced.indexOf(rec.teamId) < 0) {
+    violations.push({ type: 'QUALIFIED_NOT_IN_AUDIT', key: rec.key, year: rec.year });
+  }
+}
+
+/* BALANCE-01: como mucho un bonus tiQual por temporada (registros + cobro suelto). */
+function auditTiQual(s) {
+  (s.history || []).forEach(h => {
+    const tours = h.tournaments || [];
+    const inRecords = tours.filter(t => (t.bonusLines || []).some(l => /clasificar a The International/.test(l.label || ''))).length;
+    const loose = ((h.earnings && h.earnings.bonus) || 0) - tours.reduce((a, t) => a + (t.bonus || 0), 0);
+    if (inRecords + (loose > 0 ? 1 : 0) > 1) violations.push({ type: 'TIQUAL_BONUS_TWICE', year: h.year });
+  });
+}
+
+/* BALANCE-01: decideCut con 8 equipos y empates resueltos a mano.
+   A,B 4 series; A mejor diferencia de mapas → A, B.
+   C,D 3 series y misma diferencia; D ganó a C → D, C.
+   E,F 2 series, misma diferencia, sin h2h; seed F 70 > E 60 → F, E.
+   G 1 serie, H 0 → G, H. Corte 4: A, B, D, C. */
+(function () {
+  const r = (id, sw, mw, ml, h2h, seed) => ({ id, isPlayer: id === 'C', seriesW: sw, seriesL: 5 - sw, mapW: mw, mapL: ml, h2h: h2h || {}, seed });
+  const table = [
+    r('H', 0, 1, 9, null, 50), r('C', 3, 7, 4, null, 80), r('E', 2, 5, 6, null, 60), r('B', 4, 8, 3, null, 55),
+    r('G', 1, 3, 8, null, 40), r('D', 3, 7, 4, { C: 1 }, 45), r('F', 2, 5, 6, null, 70), r('A', 4, 9, 2, null, 30)
+  ];
+  const res = DCS.engine.tournaments.decideCut({ field: 8, cut: 4, playoff: 2 }, table);
+  const want = ['A', 'B', 'D', 'C', 'F', 'E', 'G', 'H'];
+  if (JSON.stringify(res.order) !== JSON.stringify(want) || JSON.stringify(res.advanced) !== JSON.stringify(want.slice(0, 4)) ||
+      res.cut !== 4 || res.rule !== 'seriesW>mapDiff>h2h>seed') {
+    violations.push({ type: 'DECIDE_CUT_ORDER', got: res.order, advanced: res.advanced, cut: res.cut });
+  }
+})();
+
+/* BALANCE-01: TI con 16 equipos y corte 8 → 3 rondas de playoffs. */
+(function () {
+  const ti = T.ti;
+  const rounds = DCS.engine.tournaments.bracketPath(ti).length - (ti.groupSeries ? 1 : 0);
+  if (ti.field !== 16 || DCS.engine.tournaments.cutOf(ti) !== 8 || rounds !== 3) {
+    violations.push({ type: 'TI_PLAYOFF_ROUNDS', field: ti.field, cut: DCS.engine.tournaments.cutOf(ti), rounds });
+  }
+})();
+
 const N = 120;
 for (let i = 0; i < N; i++) {
   const s = playCareer('TOUR-TEST-' + i);
   collectRecords(s).forEach(auditRecord);
+  collectRecords(s).forEach(auditCut);
+  auditTiQual(s);
 }
 
 console.log(JSON.stringify({
