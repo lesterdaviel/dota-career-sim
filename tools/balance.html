@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  LEGACY — NO EDITAR. Carga src/, que está congelado: los números
+  que saca ya no describen el juego publicado. Para medir balance
+  sobre lo que se publica, conducir dist/index.html con Playwright
+  (o cargarlo en Node con tools/load-dist.js). Ver ARCHITECTURE.md.
+  ============================================================
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test de balance · Dota 2 Career Simulator</title>
+<link rel="stylesheet" href="../styles/main.css">
+<style>
+  .main { max-width: 980px; margin: 0 auto; padding: 24px 18px 60px; }
+  .bar-row { display:flex; align-items:center; gap:10px; padding:4px 0; }
+  .bar-row .lbl { width: 220px; font-size: 13px; color: var(--text-2); }
+  .bar-row .val { width: 68px; text-align:right; font-family: var(--mono); font-size: 13px; }
+  .ok { color: var(--teal); }
+  .warn { color: var(--gold); }
+  .bad { color: var(--red); }
+  #log { font-family: var(--mono); font-size: 12px; color: var(--text-3); max-height: 180px; overflow:auto; }
+</style>
+</head>
+<body>
+<div class="main">
+  <div class="page-head">
+    <h2>Test de balance</h2>
+    <div class="sub">Simula carreras completas de 16 a la retirada y comprueba que los desenlaces sean diversos.
+      No modifica tu partida guardada.</div>
+  </div>
+
+  <div class="card"><div class="card-body">
+    <div class="row">
+      <button class="btn btn-primary" data-run="100">Simular 100 carreras</button>
+      <button class="btn" data-run="300">Simular 300</button>
+      <button class="btn" data-run="600">Simular 600</button>
+      <span class="muted small" id="status">Listo.</span>
+    </div>
+  </div></div>
+
+  <div id="out"></div>
+</div>
+
+<script src="../src/core/rng.js"></script>
+<script src="../src/core/util.js"></script>
+<script src="../src/core/runtime.js"></script>
+<script src="../src/data/roles.js"></script>
+<script src="../src/data/archetypes.js"></script>
+<script src="../src/data/world.js"></script>
+<script src="../src/data/teams.js"></script>
+<script src="../src/data/tournaments.js"></script>
+<script src="../src/data/finance.js"></script>
+<script src="../src/ui/format.js"></script>
+<script src="../src/data/events.js"></script>
+<script src="../src/engine/stats.js"></script>
+<script src="../src/engine/player.js"></script>
+<script src="../src/engine/world.js"></script>
+<script src="../src/engine/match.js"></script>
+<script src="../src/engine/performance.js"></script>
+<script src="../src/engine/progression.js"></script>
+<script src="../src/engine/tournaments.js"></script>
+<script src="../src/engine/finance.js"></script>
+<script src="../src/engine/market.js"></script>
+<script src="../src/engine/events.js"></script>
+<script src="../src/engine/retirement.js"></script>
+<script src="../src/engine/season.js"></script>
+<script src="../src/engine/trophies.js"></script>
+<script src="../src/state/store.js"></script>
+<script src="../src/state/game.js"></script>
+<script src="../src/ui/components.js"></script>
+<script src="balance.js"></script>
+<script>
+(function () {
+  var fmt = DCS.ui.fmt, c = DCS.ui.c;
+  var out = document.getElementById('out');
+  var status = document.getElementById('status');
+
+  function pctBar(label, v, targetLo, targetHi) {
+    var tone = '';
+    if (targetLo !== undefined) tone = (v >= targetLo && v <= targetHi) ? 'ok' : (v > targetHi ? 'bad' : 'warn');
+    return '<div class="bar-row"><span class="lbl">' + label + '</span>' +
+      '<span class="bar"><span class="bar-fill tone-mid" style="width:' + (v * 100).toFixed(1) + '%"></span></span>' +
+      '<span class="val ' + tone + '">' + fmt.pct(v, 1) + '</span></div>';
+  }
+
+  function render(s, rows, ms) {
+    var cats = Object.keys(s.categories).sort(function (a, b) { return s.categories[b] - s.categories[a]; });
+    var catHtml = cats.map(function (k) {
+      return pctBar(k, s.categories[k] / s.n);
+    }).join('');
+
+    var roleHtml = Object.keys(s.roles).map(function (r) {
+      var x = s.roles[r];
+      return '<tr><td>' + DCS.data.ROLES[r].name + '</td><td class="num">' + x.n + '</td>' +
+        '<td class="num">' + fmt.dec(x.rating / x.n, 1) + '</td>' +
+        '<td class="num">' + fmt.pct(x.ti / x.n, 0) + '</td></tr>';
+    }).join('');
+
+    var integrity = s.integrity.length
+      ? '<p class="bad">' + s.integrity.length + ' problemas de integridad:<br>' + s.integrity.slice(0, 10).join('<br>') + '</p>'
+      : '<p class="ok">Sin problemas de integridad: mapas = victorias + derrotas, sin negativos, ' +
+        'nadie juega pasados los 38, ningún TI ganado sin disputarlo, ratings dentro de rango.</p>';
+
+    out.innerHTML =
+      '<div class="card"><div class="card-head"><h3>Reparto de desenlaces</h3>' +
+      '<span class="card-meta">' + s.n + ' carreras · ' + (ms / 1000).toFixed(1) + 's</span></div>' +
+      '<div class="card-body">' + catHtml + '</div></div>' +
+
+      '<div class="card"><div class="card-head"><h3>Techo competitivo alcanzado</h3></div><div class="card-body">' +
+      pctBar('Llegó a Tier 1', s.reachedT1, 0.05, 0.35) +
+      pctBar('Techo en Tier 2', s.reachedT2, 0.15, 0.45) +
+      pctBar('Techo en Tier 3', s.stuckT3, 0.15, 0.60) +
+      pctBar('Nunca fue profesional', s.neverPro, 0.00, 0.25) +
+      pctBar('Jugó The International', s.playedTi, 0.03, 0.30) +
+      pctBar('Ganó The International', s.wonTi, 0.005, 0.10) +
+      pctBar('Ganó algún torneo', s.anyTitle) +
+      pctBar('Ganó un título de prestigio', s.bigTitle, 0.02, 0.35) +
+      pctBar('Alcanzó rating 90+', s.rating90, 0.01, 0.20) +
+      pctBar('Alcanzó rating 80+', s.rating80, 0.05, 0.45) +
+      pctBar('Alcanzó rating 70+', s.rating70) +
+      pctBar('Se retiró antes de los 28', s.retiredEarly) +
+      pctBar('Llegó al límite de 38 años', s.reached38, 0.00, 0.45) +
+      '</div></div>' +
+
+      '<div class="card"><div class="card-head"><h3>Medias</h3></div><div class="card-body"><div class="tiles">' +
+      '<div class="tile"><span class="tile-label">Edad de retirada</span><span class="tile-value">' + fmt.dec(s.avgRetireAge, 1) + '</span></div>' +
+      '<div class="tile"><span class="tile-label">Años pro</span><span class="tile-value">' + fmt.dec(s.avgProYears, 1) + '</span></div>' +
+      '<div class="tile"><span class="tile-label">Mejor rating</span><span class="tile-value">' + fmt.dec(s.avgBestRating, 1) + '</span></div>' +
+      '<div class="tile"><span class="tile-label">Mapas</span><span class="tile-value">' + fmt.int(s.avgMaps) + '</span></div>' +
+      '<div class="tile"><span class="tile-label">Earnings</span><span class="tile-value">' + fmt.money(s.avgEarnings) + '</span></div>' +
+      '</div></div></div>' +
+
+      '<div class="card"><div class="card-head"><h3>Por posición</h3></div><div class="card-body">' +
+      '<div class="table-wrap"><table class="tbl"><thead><tr><th>Rol</th><th class="num">Carreras</th>' +
+      '<th class="num">Mejor rating medio</th><th class="num">% jugó TI</th></tr></thead><tbody>' +
+      roleHtml + '</tbody></table></div></div></div>' +
+
+      '<div class="card"><div class="card-head"><h3>Integridad de datos</h3></div><div class="card-body">' +
+      integrity + '</div></div>' +
+
+      '<div class="card"><div class="card-head"><h3>Muestra de 15 carreras</h3></div><div class="card-body">' +
+      '<div class="table-wrap"><table class="tbl"><thead><tr><th>Rol</th><th class="num">Retiro</th>' +
+      '<th class="num">Años pro</th><th class="num">Tier</th><th class="num">Mejor rating</th>' +
+      '<th class="num">Títulos</th><th class="num">TI</th><th class="num">Earnings</th><th>Legado</th></tr></thead><tbody>' +
+      rows.slice(0, 15).map(function (r) {
+        return '<tr><td>' + DCS.data.ROLES[r.role].short + '</td><td class="num">' + r.retireAge + '</td>' +
+          '<td class="num">' + r.proYears + '</td><td class="num">' + (r.bestTier || '—') + '</td>' +
+          '<td class="num">' + (r.bestRating === null ? '—' : r.bestRating) + '</td>' +
+          '<td class="num">' + r.titles + '</td><td class="num">' + r.tiPlayed + '/' + r.tiWon + '</td>' +
+          '<td class="num">' + fmt.money(r.earnings) + '</td><td>' + r.category + '</td></tr>';
+      }).join('') + '</tbody></table></div></div></div>';
+  }
+
+  function run(n) {
+    var rows = [], i = 0, t0 = performance.now();
+    status.textContent = 'Simulando…';
+    out.innerHTML = '';
+    function chunk() {
+      var end = Math.min(i + 10, n);
+      for (; i < end; i++) rows.push(DCS.balance.runCareer());
+      status.textContent = 'Simulando… ' + i + '/' + n;
+      if (i < n) setTimeout(chunk, 0);
+      else {
+        var ms = performance.now() - t0;
+        status.textContent = 'Completado: ' + n + ' carreras en ' + (ms / 1000).toFixed(1) + 's';
+        render(DCS.balance.summarize(rows), rows, ms);
+        window.__lastRows = rows;
+        window.__lastSummary = DCS.balance.summarize(rows);
+      }
+    }
+    chunk();
+  }
+
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-run]');
+    if (el) run(parseInt(el.getAttribute('data-run'), 10));
+  });
+  window.runBalance = run;
+})();
+</script>
+</body>
+</html>

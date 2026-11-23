@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <g fill="#12342c">
+    <polygon points="20,860 70,680 120,860"/>
+    <polygon points="90,900 150,700 210,900"/>
+    <polygon points="180,870 240,710 300,870"/>
+    <polygon points="280,920 340,740 400,920"/>
+    <polygon points="360,850 410,700 460,850"/>
+    <polygon points="430,890 490,730 550,890"/>
+    <polygon points="40,780 80,650 118,780"/>
+    <polygon points="140,800 186,640 232,800"/>
+    <polygon points="320,800 368,650 416,800"/>
+    <ellipse cx="80" cy="870" rx="70" ry="22"/>
+    <ellipse cx="240" cy="900" rx="80" ry="24"/>
+    <ellipse cx="420" cy="880" rx="64" ry="20"/>
+  </g>
+  <g fill="#1e4c40" opacity=".65">
+    <polygon points="48,850 70,700 92,850"/>
+    <polygon points="158,888 186,720 212,888"/>
+    <polygon points="348,910 370,760 392,910"/>
+    <polygon points="448,870 490,750 528,870"/>
+  </g>
+  <g fill="#2a4a38" opacity=".5">
+    <ellipse cx="200" cy="940" rx="14" ry="7"/>
+    <ellipse cx="310" cy="950" rx="10" ry="5"/>
+    <ellipse cx="520" cy="860" rx="16" ry="7"/>
+  </g>
+</svg>

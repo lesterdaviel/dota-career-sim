@@ -1,0 +1,9 @@
+# Ruido del sistema y del editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+
+# Carpeta de publicación: se regenera copiando dist/index.html
+docs/

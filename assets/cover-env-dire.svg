@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <g fill="#1a0c0a">
+    <polygon points="1480,360 1500,210 1522,360"/>
+    <polygon points="1540,390 1556,230 1576,390"/>
+    <polygon points="1600,340 1616,190 1636,340"/>
+    <polygon points="1660,370 1674,220 1692,370"/>
+    <polygon points="1720,320 1734,180 1752,320"/>
+    <polygon points="1780,350 1792,210 1808,350"/>
+    <polygon points="1840,300 1852,170 1868,300"/>
+    <rect x="1496" y="340" width="4" height="70"/>
+    <rect x="1554" y="370" width="3" height="60"/>
+    <rect x="1614" y="320" width="4" height="80"/>
+    <rect x="1672" y="350" width="3" height="55"/>
+  </g>
+  <g fill="none" stroke="#2a1210" stroke-width="2" opacity=".55">
+    <path d="M1510 280 L1480 250 L1490 240"/>
+    <path d="M1624 240 L1650 210"/>
+    <path d="M1738 220 L1770 190 L1760 180"/>
+  </g>
+  <g fill="#2a1010" opacity=".4">
+    <polygon points="1400,430 1450,400 1480,440 1430,460"/>
+    <polygon points="1680,400 1740,370 1760,410 1710,430"/>
+    <polygon points="1800,360 1850,340 1870,370 1820,390"/>
+  </g>
+  <g stroke="#1a0808" stroke-width="1.5" fill="none" opacity=".4">
+    <path d="M1380 480 L1440 520 L1410 560"/>
+    <path d="M1580 440 L1660 490"/>
+    <path d="M1740 420 L1820 470 L1790 510"/>
+  </g>
+</svg>
