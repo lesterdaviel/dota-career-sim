@@ -8031,14 +8031,17 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
   var U = DCS.util;
   var ATTR_KEYS = DCS.data.ATTR_KEYS;
 
-  /* Bandas de potencial. Deliberadamente sesgadas hacia abajo:
-     la mayoría de los aspirantes no tienen techo de Tier 1.      */
+  /* Bandas de potencial. Siguen sesgadas hacia abajo: el 80 % de los
+     aspirantes no tiene techo de Tier 1 (antes 86 %) y solo el 20 %
+     saca potencial >=85 (antes 14 %). Ajuste de dificultad del
+     23 nov 2026: umbrales 0.32/0.64/0.86/0.965 -> 0.30/0.58/0.80/0.95,
+     mismos rangos y mismas llamadas al rng.                        */
   function rollPotential(rng) {
     var r = rng.float();
-    if (r < 0.32) return rng.range(50, 65);
-    if (r < 0.64) return rng.range(65, 76);
-    if (r < 0.86) return rng.range(76, 85);
-    if (r < 0.965) return rng.range(85, 92);
+    if (r < 0.30) return rng.range(50, 65);
+    if (r < 0.58) return rng.range(65, 76);
+    if (r < 0.80) return rng.range(76, 85);
+    if (r < 0.95) return rng.range(85, 92);
     return rng.range(92, 99);
   }
 
@@ -10895,6 +10898,13 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
   /* AJUSTE DE DIFICULTAD — parámetros que gobiernan la progresión
      (documentación; los valores NO se cambian aquí sin re-medir con
      tools/progression-test.js, baseline-test y balance-audit):
+     - rollPotential() (PLAYER, ~L8036): el parámetro que más decide
+       llegar a Tier 1, porque fija el techo del jugador. Se midió que
+       bajar VALUE_BANDS de Tier 1, relajar eliteGate o subir el x1,55
+       de veteranos no subía la llegada a Tier 1 (13,3 % -> 13,3 %,
+       13,3 % y 10 %), y dos de ellos rompían los targets de
+       BALANCE-01. Por eso el ajuste del 23 nov 2026 tocó solo sus
+       umbrales.
      - VALUE_BANDS (abajo): valor mínimo que pide cada tier, del club
        más flojo al más fuerte. Subirlo retrasa ascensos del jugador.
      - eliteGate(): los T1 de élite exigen value>=70 y form>=55, o
@@ -10908,7 +10918,8 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
        calidad > media del tier +7 (p 0,52) y baja si < media -9
        (p 0,42); disolución anual con riesgo 0,05 (+0,07 recursos<25,
        +0,05 calidad < media -7), nunca el equipo del jugador.
-     Referencia (120 carreras): T2 55 %, T1 13,3 %. */
+     Referencia (120 carreras): T2 54,2 %, T1 16,7 % (antes 55 % y
+     13,3 %, previo al ajuste de rollPotential). */
   /* Valor de mercado que pide cada categoría, del club más flojo al
      más fuerte de su tier. Son listones blandos: hay excepciones,
      pero hay que merecerlas. */

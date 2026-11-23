@@ -7,9 +7,11 @@
    (b) todos los equipos tienen tierHistory (tras jugar y tras migrar),
    (c) cargar no reescribe tierHistory,
    (d) TEAM_SNAPSHOT sin fecha ni fuentes (no se presenta como actual).
-   Referencia «antes» (120 carreras PROG-i): T2 55 %, T1 13,3 %, años a T1
-   mediana 11 (p10 7, p90 18), 34 % de temporadas sin equipo, títulos
-   mediana 2 / p90 7 / máx 29, 32 carreras con 0, TI en 3 carreras (máx 2).
+   Referencia (120 carreras PROG-i, tras ajustar rollPotential el 23 nov
+   2026): T2 54,2 %, T1 16,7 %, años a T1 mediana 11 (p10 7, p90 18), 33 %
+   de temporadas sin equipo, títulos mediana 2 / p90 8 / máx 33, TI en 4
+   carreras (máx 6). Antes del ajuste: T2 55 %, T1 13,3 %, años a T1
+   mediana 11, 34 % sin equipo, títulos p90 7 / máx 29, TI en 3 carreras.
    «Años hasta T1» = nº de temporada (1-based) de la primera con tier 1. */
 const mem = {};
 global.localStorage = { setItem: (k, v) => (mem[k] = String(v)), getItem: k => (k in mem ? mem[k] : null), removeItem: k => delete mem[k] };

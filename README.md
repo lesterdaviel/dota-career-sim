@@ -88,6 +88,9 @@ plantillas los genera el juego. No hay snapshot con fecha ni fuente de datos rea
 `tierHistory[año]` (aditivo, no altera la simulación).
 
 Parámetros que gobiernan la progresión (comentario junto a `VALUE_BANDS`):
+- `rollPotential`: el que más decide llegar a T1 (fija el techo). Ajuste del 23 nov 2026:
+  umbrales 0,32/0,64/0,86/0,965 → 0,30/0,58/0,80/0,95; el 80 % sigue sin techo de T1
+  (antes 86 %) y el 20 % saca potencial ≥ 85 (antes 14 %).
 - `VALUE_BANDS`: valor mínimo por tier (T1 52-78, T2 38-63, T3 20-45).
 - `eliteGate`: T1 de élite exige value ≥ 70 y forma ≥ 55, o reputación ≥ 82 y forma ≥ 48.
 - `generateOffers`: interés T1 ×0,18 con < 2 años pro y value < 65; ×1,55 con ≥ 2 años pro.
@@ -95,9 +98,11 @@ Parámetros que gobiernan la progresión (comentario junto a `VALUE_BANDS`):
 - `evolveWorld`: ascenso si calidad > media del tier +7 (p 0,52), descenso si < media −9
   (p 0,42); disolución anual con riesgo base 0,05.
 
-Medición de referencia (120 carreras, semillas `PROG-i`): llega a T2 el 55 %, a T1 el
-13,3 %; años hasta T1 mediana 11 (p10 7, p90 18); 34 % de temporadas sin equipo;
-títulos mediana 2 / p90 7 / máx 29, 32 carreras con 0; TI en 3 carreras (máx 2).
+Medición de referencia (120 carreras, semillas `PROG-i`, tras el ajuste de
+`rollPotential`): llega a T2 el 54,2 %, a T1 el 16,7 %; años hasta T1 mediana 11
+(p10 7, p90 18); 33 % de temporadas sin equipo; títulos mediana 2 / p90 8 / máx 33;
+TI en 4 carreras (máx 6). Antes del ajuste: T2 55 %, T1 13,3 %, años a T1 mediana 11.
+Con 60 carreras `BAL`: TI por temporada en T1 13 %, títulos por carrera 4,22, GOAT 2/60.
 Para repetirla: `node tools/progression-test.js`.
 
 ---
