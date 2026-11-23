@@ -80,6 +80,26 @@ posición a lo largo de su carrera, cada estadística se promedia solo sobre los
 los que existía. Las estadísticas históricas nunca se sobrescriben y los cambios de
 equipo a mitad de temporada conservan el total anual con su desglose por etapa.
 
+### Progresión y dificultad
+Los Tier 1/2/3 son **niveles internos del juego**, no una clasificación oficial. El
+catálogo mezcla nombres de organizaciones reales y ficticias; ratings, tiers y
+plantillas los genera el juego. No hay snapshot con fecha ni fuente de datos reales
+(`DCS.data.TEAM_SNAPSHOT.asOf === null`, `sources: []`). Cada equipo guarda
+`tierHistory[año]` (aditivo, no altera la simulación).
+
+Parámetros que gobiernan la progresión (comentario junto a `VALUE_BANDS`):
+- `VALUE_BANDS`: valor mínimo por tier (T1 52-78, T2 38-63, T3 20-45).
+- `eliteGate`: T1 de élite exige value ≥ 70 y forma ≥ 55, o reputación ≥ 82 y forma ≥ 48.
+- `generateOffers`: interés T1 ×0,18 con < 2 años pro y value < 65; ×1,55 con ≥ 2 años pro.
+- `ensureSafetyOffers`: red de seguridad en Tier 3 tras 2-3 temporadas sin equipo.
+- `evolveWorld`: ascenso si calidad > media del tier +7 (p 0,52), descenso si < media −9
+  (p 0,42); disolución anual con riesgo base 0,05.
+
+Medición de referencia (120 carreras, semillas `PROG-i`): llega a T2 el 55 %, a T1 el
+13,3 %; años hasta T1 mediana 11 (p10 7, p90 18); 34 % de temporadas sin equipo;
+títulos mediana 2 / p90 7 / máx 29, 32 carreras con 0; TI en 3 carreras (máx 2).
+Para repetirla: `node tools/progression-test.js`.
+
 ---
 
 ## Interfaz
