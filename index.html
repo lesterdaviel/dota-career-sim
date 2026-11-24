@@ -456,6 +456,18 @@
     /** Flag ISO per language code (presentation only). */
     FLAG_ISO: { es: 'es', en: 'gb' },
 
+    /** Banderas SVG inline propias (portada). España 1:2:1 sin escudo; Union Jack simplificado. */
+    FLAG_SVG: {
+      es: '<svg class="lang-svg" viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">' +
+        '<rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg>',
+      gb: '<svg class="lang-svg" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">' +
+        '<rect width="60" height="30" fill="#012169"/>' +
+        '<path d="M0 0L60 30M60 0L0 30" stroke="#fff" stroke-width="6"/>' +
+        '<path d="M0 0L60 30M60 0L0 30" stroke="#c8102e" stroke-width="2"/>' +
+        '<path d="M30 0V30M0 15H60" stroke="#fff" stroke-width="10"/>' +
+        '<path d="M30 0V30M0 15H60" stroke="#c8102e" stroke-width="6"/></svg>'
+    },
+
     /** Compact language switcher with flag icons */
     langSwitch: function (opts) {
       opts = opts || {};
@@ -470,9 +482,12 @@
         html += '<button type="button" class="lang-btn' + active +
           '" data-action="set-lang" data-value="' + code + '" aria-pressed="' +
           (code === lang ? 'true' : 'false') + '" title="' + label + '" aria-label="' + label + '">' +
-          '<img class="lang-flag" src="https://flagcdn.com/w40/' + iso + '.png" width="28" height="20" alt="" ' +
-          'loading="lazy" decoding="async">' +
-          '<span class="lang-code">' + code.toUpperCase() + '</span>' +
+          /* opts.flags (solo portada): bandera SVG inline propia, texto oculto. */
+          (opts.flags && i18n.FLAG_SVG[iso]
+            ? i18n.FLAG_SVG[iso] + '<span class="bx-sr">' + label + '</span>'
+            : '<img class="lang-flag" src="https://flagcdn.com/w40/' + iso + '.png" width="28" height="20" alt="" ' +
+              'loading="lazy" decoding="async">' +
+              '<span class="lang-code">' + code.toUpperCase() + '</span>') +
           '</button>';
       }
       html += '</div>';
@@ -556,6 +571,7 @@ DCS.i18n.register("en", {"tourView":{"kicker":{"next":"Next series","live":"Seri
         n1: 'Debut', n2: 'Primer contrato', n3: 'Circuito profesional', n4: 'Legado'
       },
       ceil: { cap: 'Techo', gap: 'Margen', at: 'En su techo', never: 'Sin registro' },
+      vo: { mmrAria: 'MMR {{mmr}} · máximo {{peak}}', mmrPeak: 'MMR frente a tu máximo', yourRegion: 'Tu región', stageTi: 'The International', notInvested: 'Sin invertir' },
       dash: {
         ledger: 'Rendimiento', ledgerSub: 'Cada cifra, bajo el techo que ya has tocado.',
         totals: 'Carrera', metric: 'Métrica', now: 'Ahora',
@@ -605,6 +621,7 @@ DCS.i18n.register("en", {"tourView":{"kicker":{"next":"Next series","live":"Seri
         n1: 'Debut', n2: 'First contract', n3: 'Pro circuit', n4: 'Legacy'
       },
       ceil: { cap: 'Ceiling', gap: 'Headroom', at: 'At its ceiling', never: 'No record' },
+      vo: { mmrAria: 'MMR {{mmr}} · peak {{peak}}', mmrPeak: 'MMR against your peak', yourRegion: 'Your region', stageTi: 'The International', notInvested: 'Not invested' },
       dash: {
         ledger: 'Performance', ledgerSub: 'Every figure, under the ceiling you have already touched.',
         totals: 'Career', metric: 'Metric', now: 'Now',
@@ -884,16 +901,20 @@ body { overflow-x: hidden; }
   font-variant-numeric: tabular-nums; font-feature-settings: 'tnum';
 }
 
-/* Fondo: rejilla técnica muy tenue + dos focos fríos/cálidos */
+/* Fondo (VISUAL-OVERHAUL-01): estadio oscuro. Casi negro, foco cálido
+   arriba y ruido fino (feTurbulence inline, <1 KB, sin imágenes externas). */
+:root {
+  --vo-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .055 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html, body { background-color: #07090d; }
 body::before {
   content: "";
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, .016) 1px, transparent 1px) 0 0 / 100% 44px,
-    linear-gradient(90deg, rgba(255, 255, 255, .016) 1px, transparent 1px) 0 0 / 44px 100%,
-    radial-gradient(1000px 520px at 8% -12%, rgba(255, 107, 61, .10), transparent 62%),
-    radial-gradient(900px 520px at 102% 2%, rgba(77, 157, 255, .07), transparent 58%);
-  mask-image: linear-gradient(180deg, #000 0%, #000 60%, transparent 100%);
+    var(--vo-noise) 0 0 / 140px 140px,
+    radial-gradient(1100px 520px at 50% -16%, rgba(255, 194, 71, .07), transparent 64%),
+    radial-gradient(1000px 520px at 8% -12%, rgba(196, 48, 32, .13), transparent 62%),
+    radial-gradient(900px 520px at 102% 2%, rgba(77, 157, 255, .05), transparent 58%);
 }
 
 button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
@@ -1059,10 +1080,10 @@ a { color: var(--ember); }
 .card {
   position: relative;
   background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 107, 61, .14);
   border-radius: var(--radius);
   margin-bottom: 14px;
-  box-shadow: var(--shadow-s);
+  box-shadow: var(--shadow-s), 0 14px 32px -18px rgba(0, 0, 0, .75);
 }
 .card > .card-accent {
   position: absolute; left: 14px; right: 14px; top: 0; height: 1px;
@@ -3650,6 +3671,240 @@ a { color: var(--ember); }
 }
 
 
+/* ============================================================
+   VISUAL-OVERHAUL-01 · iconos + «Define tu identidad»
+   (solo capa visual; va tras los media queries de create-* para ganar
+   en cascada sin tocar las reglas originales)
+   ============================================================ */
+.ico { width: 1em; height: 1em; flex: 0 0 auto; vertical-align: -.15em; }
+.create-shell {
+  background: var(--vo-noise) 0 0 / 140px 140px, rgba(12, 16, 22, .8);
+  border-color: rgba(255, 107, 61, .12);
+}
+.create-forge::before {
+  background:
+    radial-gradient(900px 460px at 50% -10%, rgba(255, 194, 71, .07), transparent 62%),
+    radial-gradient(720px 420px at 8% 0%, rgba(196, 48, 32, .16), transparent 60%),
+    radial-gradient(640px 380px at 92% 12%, rgba(79, 220, 154, .05), transparent 58%);
+}
+
+/* Región: tarjetas con escudo */
+.reg-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.reg-chip {
+  align-items: center; justify-content: flex-start; text-align: center;
+  gap: 6px; padding: 12px 8px 10px; min-width: 0; width: 100%;
+}
+.reg-crest { width: 40px; height: 46px; display: block; }
+.reg-crest path { fill: var(--reg-accent, #8494a7); fill-opacity: .16; stroke: var(--reg-accent, #8494a7); stroke-width: 1.6; stroke-linejoin: round; }
+.reg-crest .reg-crest-in { fill: none; stroke-opacity: .45; stroke-width: 1; }
+.reg-crest text { fill: #f4f1ea; font-size: 9.5px; font-weight: 800; letter-spacing: .04em; font-family: var(--mono); }
+.reg-chip .reg-name { font-size: 12px; line-height: 1.25; color: var(--text-2); overflow-wrap: anywhere; }
+.reg-chip.sel, .reg-chip[aria-pressed="true"] {
+  border-color: var(--reg-accent, var(--gold));
+  background: rgba(255, 255, 255, .05);
+  box-shadow: inset 0 0 0 1px var(--reg-accent, var(--gold)), 0 0 18px -4px var(--reg-accent, var(--gold));
+}
+.reg-chip.sel .reg-crest path:first-child { fill-opacity: .32; }
+.reg-chip.sel .reg-name { color: var(--text); }
+
+/* Posición: icono + acento por rol */
+.role-row { flex-direction: row; align-items: center; gap: 12px; }
+.role-ico {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; flex: 0 0 38px; border-radius: 10px;
+  font-size: 20px; color: var(--role-accent, var(--ember));
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.role-txt { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.role-row.sel {
+  border-color: var(--role-accent, var(--ember));
+  background: rgba(255, 255, 255, .05);
+  box-shadow: inset 0 0 0 1px var(--role-accent, var(--ember)), 0 0 18px -6px var(--role-accent, var(--ember));
+}
+.role-row.sel .role-ico { border-color: var(--role-accent, var(--ember)); }
+
+/* Arquetipo: icono en la cabecera */
+.arch-head { display: flex; align-items: center; gap: 8px; }
+.arch-ico { display: inline-flex; font-size: 20px; color: var(--gold); }
+
+/* Hover / foco: elevación + brillo suave */
+.reg-chip:hover, .reg-chip:focus-visible,
+.role-row:hover, .role-row:focus-visible,
+.arch-chip:hover, .arch-chip:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -12px rgba(0, 0, 0, .85), 0 0 14px -6px var(--role-accent, var(--reg-accent, var(--gold)));
+}
+.reg-chip.sel:hover, .reg-chip.sel:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--reg-accent, var(--gold)), 0 10px 20px -12px rgba(0, 0, 0, .85), 0 0 18px -4px var(--reg-accent, var(--gold));
+}
+.role-row.sel:hover, .role-row.sel:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--role-accent, var(--ember)), 0 10px 20px -12px rgba(0, 0, 0, .85), 0 0 18px -6px var(--role-accent, var(--ember));
+}
+.reg-chip:focus-visible { outline: 2px solid var(--reg-accent, var(--gold)); outline-offset: 2px; }
+.role-row:focus-visible { outline: 2px solid var(--role-accent, var(--ember)); outline-offset: 2px; }
+.arch-chip:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+/* Minimapa decorativo */
+.create-mm { display: flex; justify-content: center; margin-top: 14px; }
+.create-minimap { width: 100%; max-width: 190px; aspect-ratio: 1 / 1; height: auto; display: block; }
+.mm-ground { fill: #0d1611; stroke: rgba(255, 194, 71, .2); stroke-width: 1; }
+.mm-river { fill: none; stroke: #2a6d8f; stroke-opacity: .55; stroke-width: 6; stroke-linecap: round; }
+.mm-lane { fill: none; stroke: rgba(255, 255, 255, .16); stroke-width: 2.5; stroke-linejoin: round; }
+.mm-base-a { fill: #3fae7a; fill-opacity: .8; }
+.mm-base-b { fill: #b8321f; fill-opacity: .8; }
+.mm-pt { cursor: pointer; }
+.mm-zone { fill: var(--role-accent); fill-opacity: 0; stroke: none; transition: fill-opacity .16s; }
+.mm-dot { fill: rgba(255, 255, 255, .4); transition: fill .16s; }
+.mm-pt:hover .mm-dot { fill: var(--role-accent); }
+.mm-pt:hover .mm-zone { fill-opacity: .12; }
+.mm-pt.sel .mm-zone { fill-opacity: .3; stroke: var(--role-accent); stroke-width: 1.2; }
+.mm-pt.sel .mm-dot { fill: var(--role-accent); }
+
+@media (max-width: 768px) {
+  .reg-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .reg-chip { min-height: 0; padding: 12px 8px 10px; }
+  .arch-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .arch-chip:nth-child(5) { grid-column: 1 / -1; }
+  .arch-chip { padding: 14px 12px; }
+  .arch-chip b { font-size: 15px; }
+  .create-minimap { max-width: 160px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reg-chip, .role-row, .arch-chip, .mm-zone, .mm-dot { transition: none; }
+  .reg-chip:hover, .reg-chip:focus-visible,
+  .role-row:hover, .role-row:focus-visible,
+  .arch-chip:hover, .arch-chip:focus-visible,
+  .reg-chip:active, .role-row:active, .arch-chip:active { transform: none; }
+}
+
+/* VISUAL-OVERHAUL-01 · parte 2: MMR, pos-chip, panel de espera, circuito */
+.mmr-bar {
+  position: relative; display: block; width: 100%; min-width: 48px; height: 3px; margin-top: 3px;
+  border-radius: 2px; background: rgba(255, 255, 255, .1); overflow: visible;
+}
+.mmr-bar-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: linear-gradient(90deg, #4d9dff, var(--gold)); }
+.mmr-bar-peak { position: absolute; right: -1px; top: -2px; bottom: -2px; width: 2px; border-radius: 1px; background: var(--gold); }
+.mmr-bar-lg { height: 6px; margin-top: 8px; min-width: 120px; border-radius: 3px; }
+.mmr-bar-lg .mmr-bar-fill { border-radius: 3px; }
+.mmr-bar-lg .mmr-bar-peak { top: -3px; bottom: -3px; width: 3px; }
+.hud-mmr .hud-v { color: var(--text); }
+.pos-chip-ico::before { content: none; }
+.pos-chip-ico .ico { font-size: 13px; }
+
+.vo-idle {
+  position: relative; overflow: hidden; padding: 28px 22px 22px;
+  background:
+    radial-gradient(420px 220px at 50% 108%, rgba(255, 194, 71, .1), transparent 70%),
+    radial-gradient(260px 340px at 50% -20%, rgba(255, 236, 200, .07), transparent 70%),
+    linear-gradient(180deg, var(--panel), var(--panel-2));
+}
+.vo-idle-stadium { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 160px; pointer-events: none; }
+.vo-idle-stadium path { fill: none; stroke: rgba(255, 255, 255, .06); stroke-width: 1.2; }
+.vo-idle-stadium .vo-idle-tier { fill: rgba(196, 48, 32, .05); stroke: none; }
+.vo-idle-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.vo-idle-ico {
+  display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px;
+  border-radius: 50%; font-size: 26px; color: var(--gold);
+  border: 1px solid rgba(255, 194, 71, .35); background: rgba(255, 194, 71, .07);
+}
+.vo-idle-title { margin-top: 12px; font-family: var(--bx-display); text-transform: uppercase; font-size: clamp(22px, 4vw, 30px); letter-spacing: .02em; line-height: 1.05; }
+.vo-idle-text { margin: 8px 0 0; font-size: 15px; color: var(--text-2); max-width: 52ch; }
+.vo-idle-list { width: 100%; text-align: left; margin-top: 6px; }
+
+/* Circuito como camino hacia TI */
+.circuit-path { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; position: relative; }
+.circuit-stage { --stage: #8494a7; position: relative; min-width: 0; margin: 0; }
+.stage-qual { --stage: #7f93a8; }
+.stage-reg { --stage: #4fb0ff; }
+.stage-intl { --stage: #ff6b3d; }
+.stage-ti { --stage: var(--gold); }
+.circuit-stage .circuit-section-title {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--stage); font-weight: 800;
+}
+.circuit-stage-ico {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; flex: 0 0 30px;
+  border-radius: 50%; font-size: 16px; color: var(--stage);
+  border: 1px solid var(--stage); background: #0c1017; position: relative; z-index: 1;
+}
+.circuit-stage-n { font-size: 10px; opacity: .8; }
+.circuit-stage .circuit-list { border-left: 2px solid var(--stage); padding-left: 10px; margin-left: 14px; }
+.stage-ti .circuit-list { background: linear-gradient(180deg, rgba(255, 194, 71, .06), transparent); border-radius: 0 8px 8px 0; }
+.stage-ti .circuit-stage-ico { background: rgba(255, 194, 71, .14); box-shadow: 0 0 16px -4px var(--gold); }
+.circuit-row.is-mine { box-shadow: inset 3px 0 0 var(--ember); padding-left: 10px; background: rgba(255, 107, 61, .06); }
+.circuit-mine { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ember); }
+@media (min-width: 1024px) {
+  .circuit-path { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  /* El icono ocupa su propia fila (la línea pasa a su altura, por detrás);
+     el rótulo «n · título» baja a la fila siguiente y nunca se tacha. */
+  .circuit-stage .circuit-section-title { flex-wrap: wrap; row-gap: 10px; }
+  .circuit-stage .circuit-stage-ico { margin-right: calc(100% - 30px); }
+  .circuit-path::before {
+    content: ""; position: absolute; z-index: 0; left: 15px; right: 15px; top: 14px; height: 2px;
+    background: linear-gradient(90deg, #7f93a8, #4fb0ff, #ff6b3d, var(--gold)); opacity: .55;
+  }
+  .circuit-stage .circuit-list {
+    border-left: 0; border-top: 1px solid var(--line-soft); margin-left: 0; padding-left: 0;
+    max-height: 420px; overflow-y: auto; overscroll-behavior: contain;
+  }
+  .circuit-stage .circuit-row { flex-wrap: wrap; gap: 4px 8px; }
+  .circuit-stage .circuit-row .badge { max-width: 100%; text-align: left; }
+  .circuit-stage .circuit-logo-wrap { width: 28px; height: 28px; }
+}
+
+/* VISUAL-OVERHAUL-01 · parte 3: Patrimonio */
+.vo-wealth-kpis .kpi {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; row-gap: 2px; align-items: center;
+  padding: 16px 16px 14px; border-color: rgba(255, 194, 71, .14);
+}
+.vo-wealth-kpis .kpi > :not(.kpi-ico) { grid-column: 2; }
+.vo-wealth-kpis .kpi-ico {
+  grid-column: 1; grid-row: 1 / span 3; align-self: center;
+  display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px;
+  border-radius: 12px; font-size: 22px; color: var(--text-2);
+  background: rgba(255, 255, 255, .04); border: 1px solid rgba(255, 255, 255, .08);
+}
+.vo-wealth-kpis .kpi-v { font-size: clamp(22px, 2.6vw, 30px); overflow-wrap: anywhere; }
+.vo-wealth-kpis .kpi-net .kpi-v { font-size: clamp(28px, 3.6vw, 42px); color: var(--gold); }
+.vo-wealth-kpis .kpi-net .kpi-ico { color: var(--gold); border-color: rgba(255, 194, 71, .35); background: rgba(255, 194, 71, .08); }
+.vo-wealth-kpis .kpi-cash .kpi-v.good { color: #4fdc9a; }
+.vo-wealth-kpis .kpi-cash .kpi-ico { color: #4fdc9a; }
+
+.vo-finance-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.vo-finance-grid .wealth-card { --risk: #4fdc9a; border-color: rgba(255, 255, 255, .08); border-left: 3px solid var(--risk); border-top: 2px solid var(--risk); box-shadow: 0 10px 24px -16px rgba(0, 0, 0, .8); }
+.vo-finance-grid .wealth-card.vo-risk-low { --risk: #4fdc9a; }
+.vo-finance-grid .wealth-card.vo-risk-mid { --risk: #ffad4a; }
+.vo-finance-grid .wealth-card.vo-risk-midhigh { --risk: #ff8a5c; }
+.vo-finance-grid .wealth-card.vo-risk-high { --risk: #ff7a6b; }
+.vo-asset-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.vo-asset-head .asset-type { flex: 1 1 auto; min-width: 0; color: var(--text-2); }
+.vo-asset-ico { display: inline-flex; font-size: 20px; color: var(--risk); }
+.vo-risk-chip {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px;
+  color: var(--risk); border: 1px solid var(--risk); background: rgba(255, 255, 255, .03); white-space: nowrap;
+}
+.vo-finance-grid .asset-value { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.1; }
+.vo-delta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 13px; }
+.vo-delta .ico { font-size: 15px; }
+.vo-delta-k { font-family: var(--font-ui); font-size: var(--fz-label); text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); }
+.vo-delta.good, .vo-delta.good b { color: #4fdc9a; }
+.vo-delta.bad, .vo-delta.bad b { color: #ff7a6b; }
+.vo-delta.muted b { color: var(--text-2); }
+.vo-delta.is-none { color: var(--text-3); font-family: var(--font-ui); }
+
+/* Evolución de ingresos (misma serie real, solo estilo) */
+.finance-income-evo svg path, .finance-income-evo svg line { vector-effect: non-scaling-stroke; }
+.finance-income-evo svg path[fill="none"] { stroke-width: 2.6; filter: drop-shadow(0 0 4px rgba(255, 194, 71, .45)); }
+.finance-income-evo svg stop:first-child { stop-opacity: .45; }
+.finance-income-evo svg circle { stroke: #0c1017; stroke-width: 1.5; }
+.finance-income-evo svg text { fill: #b9c3cf; font-weight: 700; }
+
+@media (max-width: 1100px) { .vo-finance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .vo-finance-grid { grid-template-columns: minmax(0, 1fr); }
+  .vo-wealth-kpis .kpis { grid-template-columns: minmax(0, 1fr); }
+}
+
 /* DCS_LANG_SWITCH_CSS */
 .lang-switch {
   display: inline-flex; align-items: center; gap: 4px;
@@ -3850,11 +4105,43 @@ a { color: var(--ember); }
   justify-content: flex-start;
   align-items: stretch;
   padding: 0;
+  isolation: isolate;
+  /* PORTADA-OVERHAUL · humo Radiant (azul, arriba-izq.) y Dire (rojo,
+     abajo-der.) sobre casi negro, con viñeteado y ruido. Solo CSS. */
   background:
-    linear-gradient(rgba(158, 190, 224, .035) 1px, transparent 1px) 0 0 / 48px 48px,
-    linear-gradient(90deg, rgba(158, 190, 224, .035) 1px, transparent 1px) 0 0 / 48px 48px,
-    linear-gradient(180deg, #0e131b 0%, var(--bg) 60%);
+    var(--vo-noise, none),
+    radial-gradient(ellipse 80% 75% at 45% 45%, transparent 38%, rgba(2, 3, 5, .9) 100%),
+    radial-gradient(60% 70% at 90% 95%, rgba(120, 20, 20, .35), transparent 72%),
+    radial-gradient(55% 65% at 8% 4%, rgba(20, 60, 110, .30), transparent 72%),
+    #05070a;
 }
+/* Niebla: dos capas con deriva lenta (transform/opacity). */
+.hero-stage.bx-home::before,
+.hero-stage.bx-home::after {
+  content: ""; position: absolute; inset: -20%; z-index: 0; pointer-events: none;
+}
+.hero-stage.bx-home::before {
+  background:
+    radial-gradient(40% 30% at 30% 35%, rgba(60, 100, 150, .14), transparent 70%),
+    radial-gradient(35% 25% at 68% 72%, rgba(140, 45, 38, .13), transparent 70%);
+  animation: bxFogA 52s ease-in-out infinite alternate;
+}
+.hero-stage.bx-home::after {
+  background:
+    radial-gradient(45% 28% at 72% 25%, rgba(170, 180, 200, .05), transparent 70%),
+    radial-gradient(40% 30% at 20% 82%, rgba(150, 160, 180, .045), transparent 70%);
+  animation: bxFogB 44s ease-in-out infinite alternate;
+}
+@keyframes bxFogA {
+  from { transform: translate3d(-4%, -2%, 0) scale(1); opacity: .7; }
+  to { transform: translate3d(5%, 3%, 0) scale(1.08); opacity: 1; }
+}
+@keyframes bxFogB {
+  from { transform: translate3d(4%, 2%, 0) scale(1.04); opacity: 1; }
+  to { transform: translate3d(-5%, -3%, 0) scale(1); opacity: .6; }
+}
+.hero-stage.bx-home > .bx-home-top,
+.hero-stage.bx-home > .bx-home-grid { position: relative; z-index: 1; }
 .bx-home-top {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   width: 100%; max-width: 1360px; margin: 0 auto;
@@ -3874,9 +4161,11 @@ a { color: var(--ember); }
   margin: 12px 0 0;
   font-family: var(--bx-display);
   font-size: clamp(48px, 6.4vw, 100px);
-  line-height: .88; font-weight: 700;
+  line-height: .88; font-weight: 900;
   text-transform: uppercase; letter-spacing: -.012em;
   color: var(--bx-ink);
+  /* Relieve: sombra dura corta para profundidad + halo cálido leve. */
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .75), 0 6px 18px rgba(0, 0, 0, .55), 0 0 28px rgba(255, 140, 90, .14);
 }
 .bx-home-concept {
   margin: 14px 0 0;
@@ -3890,7 +4179,15 @@ a { color: var(--ember); }
   color: var(--text-2); font-size: 16px; line-height: 1.5;
 }
 .bx-home-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 26px; }
-.bx-home-actions .btn-lg:not(.btn-primary) { min-height: 56px; }
+.bx-home-actions .btn-lg:not(.btn-primary) {
+  min-height: 56px;
+  background: transparent; color: #eef2f6;
+  border: 1.5px solid rgba(255, 255, 255, .28);
+  transition: border-color .16s, background-color .16s;
+}
+.bx-home-actions .btn-lg:not(.btn-primary):hover {
+  border-color: var(--ember); background: rgba(255, 107, 61, .08); color: #fff;
+}
 .bx-home-actions .btn:focus-visible,
 .bx-home-confirm .btn:focus-visible { outline: 3px solid #fff4de; outline-offset: 3px; }
 .bx-home-confirm {
@@ -3903,14 +4200,36 @@ a { color: var(--ember); }
 
 /* Expediente de jugador: ficha de contrato, una sola superficie. */
 .bx-file {
-  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+  position: relative; overflow: hidden;
+  /* PORTADA-OVERHAUL · cristal oscuro sobre el humo. */
+  background: rgba(8, 10, 14, .85);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, .08); border-radius: 6px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6), 0 2px 8px rgba(0, 0, 0, .45);
   padding: 0 0 18px;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bx-file { background: rgba(8, 10, 14, .94); }
+}
+.bx-file::before {
+  content: ""; display: block; height: 4px;
+  background: linear-gradient(90deg, #ff6b3d, #c2312b);
 }
 .bx-file-head {
   display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
   padding: 14px 20px; border-bottom: 1px solid var(--line);
-  border-top: 3px solid var(--ember); border-radius: 4px 4px 0 0;
 }
+.bx-file-big {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 18px; font-weight: 800; color: #fff7ea;
+}
+/* Más específico que .bx-file-row dd (declarada después), que ganaba. */
+.bx-file-row.bx-file-mmr dd {
+  flex-direction: column; flex-wrap: nowrap; align-items: flex-end; gap: 6px; text-align: right;
+  margin-left: auto;
+}
+.bx-file-row.bx-file-mmr .mmr-bar { width: 140px; max-width: 100%; margin-left: auto; }
 .bx-file-k {
   font-size: 12px; font-weight: 700; letter-spacing: .16em;
   text-transform: uppercase; color: var(--text-3);
@@ -3938,7 +4257,8 @@ a { color: var(--ember); }
 }
 .bx-file-nick {
   font-family: var(--bx-display); font-size: clamp(32px, 3vw, 40px); font-weight: 700;
-  line-height: 1; letter-spacing: .01em; color: var(--bx-ink); overflow-wrap: anywhere;
+  line-height: 1; letter-spacing: .01em; color: #fff7ea; overflow-wrap: anywhere;
+  text-shadow: 0 0 18px rgba(255, 107, 61, .28), 0 1px 0 rgba(0, 0, 0, .6);
 }
 .bx-file-nick.is-empty { color: var(--text-3); }
 .bx-pos { display: inline-flex; gap: 6px; }
@@ -3953,15 +4273,21 @@ a { color: var(--ember); }
 .bx-path li { position: relative; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-2); }
 .bx-path li > i {
   position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 50%;
-  border: 2px solid var(--text-3); background: var(--panel);
+  border: 2px solid rgba(147, 163, 184, .45); background: #0b0e13;
 }
-.bx-path li.on { color: var(--text); font-weight: 700; }
-.bx-path li.on > i { border-color: var(--ember); background: var(--ember); }
+.bx-path li { color: var(--text-3); }
+.bx-path li.on { color: #fff7ea; font-weight: 700; }
+.bx-path li.on > i {
+  border-color: var(--ember); background: var(--ember);
+  box-shadow: 0 0 10px rgba(255, 107, 61, .7);
+}
 /* Línea discontinua: posibilidad, no garantía. */
 .bx-path li + li::before {
   content: ""; position: absolute; top: 5px; right: calc(100% - 4px); width: calc(100% - 20px);
   border-top: 2px dashed var(--line);
 }
+/* Tramo ya recorrido (nodo anterior y actual alcanzados): sólido ember. */
+.bx-path li.on + li.on::before { border-top: 2px solid var(--ember); }
 .bx-sr {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap;
@@ -3984,6 +4310,10 @@ a { color: var(--ember); }
 }
 @media (prefers-reduced-motion: reduce) {
   .bx-home-grid { animation: none; }
+  .hero-stage.bx-home::before,
+  .hero-stage.bx-home::after { animation: none; }
+  .lang-switch-home .lang-btn,
+  .bx-home-actions .btn { transition: none; }
 }
 .bx-home-actions .btn-lg { min-width: 208px; min-height: 52px; }
 /* CTA protagonista: la única pieza cálida y brillante del bloque. */
@@ -3994,13 +4324,15 @@ a { color: var(--ember); }
      degradado); #a63a16 da 6,5:1. Ningún estado usa brightness. */
   background: linear-gradient(180deg, #c94a23, #a63a16);
   border-color: #e0683f; color: #fff;
-  box-shadow: 0 0 0 1px rgba(255, 170, 120, .35), 0 10px 32px rgba(255, 107, 61, .42), 0 0 60px rgba(255, 150, 80, .22);
+  /* Borde «encendido». */
+  box-shadow: 0 0 0 1px rgba(255, 140, 90, .55), 0 0 22px rgba(255, 107, 61, .45), 0 10px 32px rgba(0, 0, 0, .45);
+  transition: box-shadow .18s, transform .18s;
 }
 .bx-home-actions .btn-primary.btn-lg:hover {
   filter: none; transform: translateY(-1px);
   background: linear-gradient(180deg, #c94a23, #b8421c);
   border-color: #f07a50;
-  box-shadow: 0 0 0 1px rgba(255, 190, 140, .5), 0 14px 38px rgba(255, 107, 61, .5), 0 0 76px rgba(255, 160, 90, .3);
+  box-shadow: 0 0 0 1px rgba(255, 170, 120, .8), 0 0 32px rgba(255, 107, 61, .65), 0 14px 38px rgba(0, 0, 0, .5);
 }
 .bx-home-actions .btn-primary.btn-lg:focus-visible {
   outline: 3px solid #fff4de; outline-offset: 3px;
@@ -4010,28 +4342,37 @@ a { color: var(--ember); }
   background: linear-gradient(180deg, #b8421c, #a63a16);
 }
 
-/* Selector de idioma de portada: control segmentado ES | EN. */
+/* Selector de idioma de portada: banderas SVG inline (ES | EN). */
 .bx-home-top > .lang-switch-home {
-  gap: 0; padding: 3px; flex: none;
-  border: 1px solid rgba(255, 220, 180, .22); border-radius: 999px;
-  background: rgba(8, 11, 18, .72);
-  backdrop-filter: blur(6px);
+  gap: 6px; padding: 3px 6px; flex: none;
+  border: 1px solid rgba(255, 220, 180, .16); border-radius: 999px;
+  background: rgba(8, 11, 18, .6);
 }
 .lang-switch-home .lang-flag { display: none; }
 .lang-switch-home .lang-btn {
-  min-height: 34px; min-width: 44px; padding: 4px 14px;
-  justify-content: center; border-radius: 999px;
-  color: #b8c4d2; opacity: 1;
-  transition: background .16s, color .16s;
+  position: relative;
+  min-height: 40px; min-width: 40px; padding: 4px;
+  justify-content: center; border-radius: 8px;
+  opacity: 1; background: transparent;
+  transition: transform .16s, filter .16s;
 }
-.lang-switch-home .lang-btn + .lang-btn { position: relative; }
-.lang-switch-home .lang-btn:hover { color: #fff; background: rgba(255, 255, 255, .08); }
-.lang-switch-home .lang-btn:focus-visible { color: #fff; outline: 3px solid #fff4de; outline-offset: 1px; }
-.lang-switch-home .lang-btn.active { color: #1a1206; background: var(--gold, #d4a84b); }
+.lang-switch-home .lang-svg {
+  display: block; width: 30px; height: 21px; border-radius: 5px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
+  filter: saturate(.75) brightness(.82);
+  transition: filter .16s, box-shadow .16s;
+}
+.lang-switch-home .lang-btn:hover { transform: scale(1.06); }
+.lang-switch-home .lang-btn:hover .lang-svg { filter: saturate(1.05) brightness(1.15); }
+.lang-switch-home .lang-btn:focus-visible { outline: 3px solid #fff4de; outline-offset: 1px; }
+.lang-switch-home .lang-btn.active .lang-svg {
+  filter: none;
+  box-shadow: 0 0 0 2px #05070a, 0 0 0 4px var(--gold, #d4a84b), 0 0 12px rgba(212, 168, 75, .45);
+}
 /* Táctil: 40 px de alto; la pastilla mide 46 px y la barra superior
    (.bx-home-grid con padding-top: 88px) sigue dejando hueco de sobra. */
 @media (max-width: 768px) {
-  .lang-switch-home .lang-btn { min-height: 40px; padding: 4px 14px; }
+  .lang-switch-home .lang-btn { min-height: 40px; padding: 4px; }
 }
 
 .bx-home-foot {
@@ -14876,6 +15217,9 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       year: s.year,
       role: s.player.role,
       overall: s.player.overall,
+      /* PORTADA-OVERHAUL: solo lectura, para la fila MMR del expediente */
+      mmr: s.player.mmr,
+      peakMmr: s.player.peakMmr,
       finished: s.finished,
       teamName: (function () {
         var t = DCS.engine.world.getTeam(s, s.player.teamId);
@@ -15387,9 +15731,24 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     return badge('TIER ' + tier, 't' + tier);
   }
 
-  function posChip(role) {
+  function posChip(role, withIcon) {
     var r = DCS.data.ROLES[role];
+    if (withIcon) {
+      return '<span class="pos-chip pos-chip-ico pos-' + role + '" style="color:' + (ROLE_ACCENT[role] || 'inherit') + '">' +
+        icon(role) + r.short + '</span>';
+    }
     return '<span class="pos-chip pos-' + role + '">' + r.short + '</span>';
+  }
+
+  /* VISUAL-OVERHAUL-01 · MMR actual frente al máximo de la carrera.
+     La pista entera = peakMmr (marca al final); sin rangos inventados. */
+  function mmrBar(mmr, peak, big) {
+    var top = Math.max(peak || 0, mmr || 0);
+    var pct = top > 0 ? Math.max(0, Math.min(100, (mmr / top) * 100)) : 0;
+    var label = t('v2.vo.mmrAria', { mmr: fmt.mmr(mmr), peak: fmt.mmr(top) }, 'MMR ' + fmt.mmr(mmr) + ' · máximo ' + fmt.mmr(top));
+    return '<span class="mmr-bar' + (big ? ' mmr-bar-lg' : '') + '" role="img" aria-label="' + esc(label) + '">' +
+      '<span class="mmr-bar-fill" style="width:' + pct.toFixed(1) + '%"></span>' +
+      '<span class="mmr-bar-peak"></span></span>';
   }
 
   function posChipFull(role) {
@@ -15685,7 +16044,42 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       '<span class="mate-nick">' + nick + '</span></span>';
   }
 
+  /* VISUAL-OVERHAUL-01 · iconos propios (SVG 24x24, trazo currentColor,
+     decorativos: aria-hidden; el texto real va siempre en el DOM).
+     Claves = ids reales de D.ROLES / D.ARCHETYPES + iconos genéricos. */
+  var ICONS = {
+    carry: '<path d="M19 3h2v2L9.5 16.5l-2-2z"/><path d="M5.5 13.5l5 5M7 17l-3.5 3.5"/>',
+    mid: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+    offlane: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/>',
+    pos4: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+    pos5: '<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    mechanical: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>',
+    smart: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+    aggressive: '<path d="M12 22c4 0 7-2.8 7-6.8 0-3.6-2.6-6-4.2-8.7-.4 2.2-1.6 3.4-2.8 4C12.4 7 10.6 4.2 8.5 2.5 8.6 6 5 8.6 5 13.6 5 18.6 8 22 12 22z"/>',
+    consistent: '<circle cx="12" cy="5" r="2"/><path d="M12 7v14M8 10h8M4 13a8 8 0 0 0 16 0"/>',
+    leader: '<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>',
+    trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9.5 17h5"/>',
+    calendar: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    building: '<path d="M4 21V5l8-2v18M12 8h8v13M2 21h20M7 8h2M7 12h2M7 16h2M15 12h2M15 16h2"/>',
+    chart: '<path d="M3 3v18h18"/><path d="M6 15l4-5 4 3 6-7"/>',
+    briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/>',
+    gamepad: '<path d="M7 8h10a4 4 0 0 1 4 4.5l-.6 4A2.5 2.5 0 0 1 16 18l-2-2h-4l-2 2a2.5 2.5 0 0 1-4.4-1.5l-.6-4A4 4 0 0 1 7 8z"/><path d="M8 11v3M6.5 12.5h3M15.5 11.5h.01M17.5 13.5h.01"/>',
+    chip: '<rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+    arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+    arrowDown: '<path d="M12 5v14M6 13l6 6 6-6"/>'
+  };
+  /* Un acento por rol: 5 tonos distinguibles, todos >4,5:1 sobre --panel. */
+  var ROLE_ACCENT = {
+    carry: '#ff6a55', mid: '#ffc247', offlane: '#5aa9ff', pos4: '#b896ff', pos5: '#4fdc9a'
+  };
+  function icon(name, extraCls) {
+    var p = ICONS[name];
+    if (!p) return '';
+    return '<svg class="ico ico-' + name + (extraCls ? ' ' + extraCls : '') + '" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + p + '</svg>';
+  }
+
   DCS.ui.c = {
+    icon: icon, roleAccent: ROLE_ACCENT, mmrBar: mmrBar,
     esc: esc, cls: cls, card: card,
     tile: tile, tiles: tiles, kpi: kpi, kpis: kpis,
     bar: bar, attrRow: attrRow, statBar: statBar, statBars: statBars,
@@ -16754,7 +17148,7 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     var html = '<div class="hero-stage bx-home">' +
       '<div class="bx-home-top">' +
       '<div class="hero-brand" aria-hidden="true"><i></i></div>' +
-      (DCS.i18n ? DCS.i18n.langSwitch({ className: 'lang-switch lang-switch-home' }) : '') +
+      (DCS.i18n ? DCS.i18n.langSwitch({ className: 'lang-switch lang-switch-home', flags: true }) : '') +
       '</div>' +
       '<div class="bx-home-grid">' +
       '<div class="bx-home-main">' +
@@ -16806,7 +17200,11 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
           : t('common.noTeam')) +
         (save.contractUntil && !save.finished ? row(h2('contract'), h2('until', { year: save.contractUntil })) : '') +
         row(h2('age'), t('common.years', { count: save.age })) +
-        row(h2('overall'), String(save.overall));
+        (typeof save.mmr === 'number'
+          ? row(t('hud.mmr', null, 'MMR'), '<span class="bx-file-big">' + fmt.mmr(save.mmr) + '</span>' +
+            (c.mmrBar ? c.mmrBar(save.mmr, save.peakMmr || save.mmr) : ''), 'bx-file-mmr')
+          : '') +
+        row(h2('overall'), '<span class="bx-file-big">' + String(save.overall) + '</span>');
     } else {
       rows = row(h2('debut'), h2('debutAge')) +
         row(h2('status'), h2('freeAgent')) +
@@ -16945,24 +17343,47 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       var rg = D.REGIONS[r];
       return '<button type="button" class="reg-chip' + (draft.region === r ? ' sel' : '') +
         '" data-action="pick-region" data-value="' + r + '" aria-pressed="' + (draft.region === r) + '" style="--reg-accent:' + (REGION_ACCENT[r] || '#8494a7') + '">' +
-        '<span class="reg-top"><span class="reg-dot" aria-hidden="true"></span><b>' + c.esc(rg.short) + '</b></span>' +
-        '<span>' + c.esc(rg.name) + '</span></button>';
+        '<svg class="reg-crest" viewBox="0 0 40 46" width="40" height="46" aria-hidden="true" focusable="false">' +
+        '<path d="M20 2l17 6v13c0 11-7.5 19-17 23C10.5 40 3 32 3 21V8z"/>' +
+        '<path class="reg-crest-in" d="M20 6.5l13 4.6V21c0 8.6-5.7 14.8-13 18.2C12.7 35.8 7 29.6 7 21v-9.9z"/>' +
+        '<text x="20" y="26.5" text-anchor="middle">' + c.esc(rg.short) + '</text></svg>' +
+        '<span class="reg-name">' + c.esc(rg.name) + '</span></button>';
     }).join('');
     var selRegion = D.REGIONS[draft.region] || D.REGIONS.eeu;
 
     var roles = D.ROLE_LIST.map(function (r) {
       var ro = D.ROLES[r];
       return '<button type="button" class="role-row' + (draft.role === r ? ' sel' : '') +
-        '" data-action="pick-role" data-value="' + r + '">' +
-        '<b>' + c.esc(ro.short) + ' — ' + c.esc(ro.name).toUpperCase() + '</b>' +
-        '<i>' + c.esc(hints[r]) + '</i></button>';
+        '" data-action="pick-role" data-value="' + r + '" style="--role-accent:' + (c.roleAccent[r] || '#ff6b3d') + '">' +
+        '<span class="role-ico">' + c.icon(r) + '</span>' +
+        '<span class="role-txt"><b>' + c.esc(ro.short) + ' — ' + c.esc(ro.name).toUpperCase() + '</b>' +
+        '<i>' + c.esc(hints[r]) + '</i></span></button>';
     }).join('');
+
+    /* Minimapa genérico (3 carriles, río en diagonal). Decorativo y
+       sincronizado con el rol; los puntos reutilizan pick-role como apoyo
+       de ratón (no enfocables: el control accesible son los botones). */
+    var MM_POS = { carry: [66, 86], mid: [50, 50], offlane: [14, 28], pos4: [33, 64], pos5: [50, 80] };
+    var minimap = '<svg class="create-minimap" viewBox="0 0 100 100" aria-hidden="true" focusable="false">' +
+      '<rect class="mm-ground" x="1" y="1" width="98" height="98" rx="8"/>' +
+      '<path class="mm-river" d="M6 6C30 40 70 60 94 94"/>' +
+      '<path class="mm-lane" d="M14 86V14H86M14 86L86 14M14 86H86V14"/>' +
+      '<circle class="mm-base mm-base-a" cx="14" cy="86" r="7"/>' +
+      '<circle class="mm-base mm-base-b" cx="86" cy="14" r="7"/>' +
+      D.ROLE_LIST.map(function (r) {
+        var p = MM_POS[r];
+        if (!p) return '';
+        return '<g class="mm-pt' + (draft.role === r ? ' sel' : '') + '" data-action="pick-role" data-value="' + r +
+          '" style="--role-accent:' + (c.roleAccent[r] || '#ff6b3d') + '">' +
+          '<circle class="mm-zone" cx="' + p[0] + '" cy="' + p[1] + '" r="12"/>' +
+          '<circle class="mm-dot" cx="' + p[0] + '" cy="' + p[1] + '" r="4"/></g>';
+      }).join('') + '</svg>';
 
     var archs = D.ARCHETYPE_LIST.map(function (a) {
       var ar = D.ARCHETYPES[a];
       return '<button type="button" class="arch-chip' + (draft.archetype === a ? ' sel' : '') +
         '" data-action="pick-arch" data-value="' + a + '">' +
-        '<b>' + c.esc(ar.name) + '</b>' +
+        '<span class="arch-head"><span class="arch-ico">' + c.icon(a) + '</span><b>' + c.esc(ar.name) + '</b></span>' +
         '<span class="arch-pro">+ ' + c.esc(ar.pros) + '</span>' +
         '<span class="arch-con">− ' + c.esc(ar.cons) + '</span>' +
         '</button>';
@@ -17002,6 +17423,7 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       '<section class="create-col play">' +
       '<h3>' + t('dash.position', null, 'Posición') + '</h3>' +
       '<div class="role-list">' + roles + '</div>' +
+      '<div class="create-mm">' + minimap + '</div>' +
       '</section>' +
 
       '<section class="create-col style">' +
@@ -17634,16 +18056,25 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
     var tally = {};
     competitionTally(state).forEach(function (s) { tally[s.id] = s; });
 
+    /* VISUAL-OVERHAUL-01 · camino hacia The International: mismas
+       secciones del catálogo, con TI (level 'ti') separado al final. */
+    var myRegion = state.player && state.player.region;
+    var mineLabel = t('v2.vo.yourRegion', null, 'Tu región'); /* fuera del map: allí `t` es la ficha del torneo */
     var sections = [
-      { id: 'qual', title: t('ui.sectionQual', null, 'Clasificatorias') },
-      { id: 'reg', title: t('ui.sectionReg', null, 'Regionales') },
-      { id: 'intl', title: t('ui.sectionIntl', null, 'Eventos internacionales') }
+      { id: 'qual', ico: 'calendar', title: t('ui.sectionQual', null, 'Clasificatorias'),
+        match: function (e) { return e.section === 'qual'; } },
+      { id: 'reg', ico: 'building', title: t('ui.sectionReg', null, 'Regionales'),
+        match: function (e) { return e.section === 'reg'; } },
+      { id: 'intl', ico: 'chart', title: t('ui.sectionIntl', null, 'Eventos internacionales'),
+        match: function (e) { return e.section === 'intl' && e.level !== 'ti'; } },
+      { id: 'ti', ico: 'trophy', title: t('v2.vo.stageTi', null, 'The International'),
+        match: function (e) { return e.section === 'intl' && e.level === 'ti'; } }
     ];
 
     var intro = '<p class="circuit-intro">' + t('ui.circuitIntro') + '</p>';
 
-    var body = intro + sections.map(function (sec) {
-      var items = catalog.filter(function (e) { return e.section === sec.id; });
+    var body = intro + '<ol class="circuit-path">' + sections.map(function (sec, si) {
+      var items = catalog.filter(sec.match);
       if (!items.length) return '';
       var rows = items.map(function (e) {
         var t = (e.series && tally[e.series]) || tally[e.id];
@@ -17667,19 +18098,22 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
              '<span class="circuit-logo-ph" aria-hidden="true">' + c.esc(initials) + '</span></span>')
           : '';
         var w = tourWeight(D.TOURNAMENT_TEMPLATES[e.templateId]);
-        return '<li class="' + (w ? 'circuit-row ' + w : 'circuit-row') + '"' +
+        var mine = !!(e.region && myRegion && e.region === myRegion);
+        return '<li class="' + (w ? 'circuit-row ' + w : 'circuit-row') + (mine ? ' is-mine' : '') + '"' +
           ' data-action="select-tour" data-value="' + c.esc(e.name) + '" role="button" tabindex="0">' +
           logo +
           '<span class="circuit-name"><b>' + c.esc(e.name) + '</b>' +
           (note ? '<span class="circuit-note">' + c.esc(note) + '</span>' : '') +
+          (mine ? '<span class="circuit-mine">' + c.esc(mineLabel) + '</span>' : '') +
           '</span>' +
           c.badge(badgeLabel, e.tone || 'muted') +
           '</li>';
       }).join('');
-      return '<div class="circuit-section">' +
-        '<div class="circuit-section-title">' + c.esc(sec.title) + '</div>' +
-        '<ul class="circuit-list">' + rows + '</ul></div>';
-    }).join('');
+      return '<li class="circuit-section circuit-stage stage-' + sec.id + '">' +
+        '<div class="circuit-section-title"><span class="circuit-stage-ico">' + c.icon(sec.ico) + '</span>' +
+        '<span class="circuit-stage-n" aria-hidden="true">' + (si + 1) + '</span>' + c.esc(sec.title) + '</div>' +
+        '<ul class="circuit-list">' + rows + '</ul></li>';
+    }).join('') + '</ol>';
 
     return c.card({
       title: t('ui.circuitTitle', null, 'Circuito'),
@@ -17695,11 +18129,16 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       t('finance.title', null, 'Patrimonio') + '</h2><p>' +
       t('ui.wealthBlurb', null, 'Earnings es historia. El cash es lo que puedes mover. El patrimonio es lo que queda.') +
       '</p></div></div>';
-    var k = c.kpis([
-      c.kpi(t('finance.cash', null, 'Cash'), fmt.money(snap.cash), t('ui.available', null, 'disponible'), 'gold', { v: snap.cash, fmt: 'money' }),
-      c.kpi(t('finance.title', null, 'Patrimonio'), fmt.money(snap.net), t('ui.net', null, 'neto'), null, { v: snap.net, fmt: 'money' }),
-      c.kpi(t('finance.earnings', null, 'Earnings'), fmt.money(snap.earnings), t('ui.earningsHistory', null, 'histórico de carrera'), null, { v: snap.earnings, fmt: 'money' })
-    ]);
+    /* VISUAL-OVERHAUL-01 · KPIs con icono (mismos datos); el icono se
+       inserta delante de la etiqueta del kpi estándar. */
+    var kIco = function (html, name) {
+      return html.replace('<span class="kpi-k">', '<span class="kpi-ico">' + c.icon(name) + '</span><span class="kpi-k">');
+    };
+    var k = '<div class="vo-wealth-kpis">' + c.kpis([
+      kIco(c.kpi(t('finance.cash', null, 'Cash'), fmt.money(snap.cash), t('ui.available', null, 'disponible'), snap.cash > 0 ? 'good' : null, { v: snap.cash, fmt: 'money' }, 'kpi-cash'), 'briefcase'),
+      kIco(c.kpi(t('finance.title', null, 'Patrimonio'), fmt.money(snap.net), t('ui.net', null, 'neto'), 'gold', { v: snap.net, fmt: 'money' }, 'kpi-net'), 'chart'),
+      kIco(c.kpi(t('finance.earnings', null, 'Earnings'), fmt.money(snap.earnings), t('ui.earningsHistory', null, 'histórico de carrera'), null, { v: snap.earnings, fmt: 'money' }, 'kpi-earn'), 'trophy')
+    ]) + '</div>';
     /* Evolución de ingresos por temporada: mismo dato que ya suma
        career.earnings (salario + premios + otros), desglosado año a
        año a partir de state.history — no hay un histórico de
@@ -17716,16 +18155,29 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
         }), { color: '#ffc247' })
       })
       : '';
-    var buckets = '<div class="finance-grid">' + snap.buckets.map(function (b) {
+    /* Riesgo e icono por id de caja (independiente del idioma del texto). */
+    var RISK_LV = { realEstate: 'low', funds: 'low', business: 'mid', esports: 'midhigh', tech: 'high' };
+    var BUCKET_ICO = { realEstate: 'building', funds: 'chart', business: 'briefcase', esports: 'gamepad', tech: 'chip' };
+    var buckets = '<div class="finance-grid vo-finance-grid">' + snap.buckets.map(function (b) {
       var d = b.value - b.put;
-      return '<article class="wealth-card">' +
+      var delta;
+      if (!b.put && !b.value) {
+        delta = '<div class="vo-delta is-none">' + t('v2.vo.notInvested', null, 'Sin invertir') + '</div>';
+      } else {
+        var pct = b.put > 0 ? ' (' + (d > 0 ? '+' : '') + (d / b.put * 100).toFixed(1) + '%)' : '';
+        delta = '<div class="vo-delta ' + pnlClass(d) + '"><span class="vo-delta-k">' + t('ui.variation') + '</span>' +
+          (d > 0 ? c.icon('arrowUp') : (d < 0 ? c.icon('arrowDown') : '')) +
+          '<b>' + (d > 0 ? '+' : '') + fmt.money(d) + pct + '</b></div>';
+      }
+      return '<article class="wealth-card vo-risk-' + (RISK_LV[b.id] || 'mid') + '">' +
+        '<div class="vo-asset-head"><span class="vo-asset-ico">' + c.icon(BUCKET_ICO[b.id] || 'chart') + '</span>' +
         '<div class="asset-type">' + c.esc(b.name) + '</div>' +
+        '<span class="vo-risk-chip">' + t('ui.riskShort', null, 'Riesgo') + ': ' + c.esc(b.risk) + '</span></div>' +
         '<div class="asset-value">' + fmt.money(b.value) + '</div>' +
-        '<div class="risk-row"><span>' + t('ui.riskShort', null, 'Riesgo') + ': ' + c.esc(b.risk) + '</span><span>' +
-        t('ui.potentialShort', null, 'Potencial') + ': ' + c.esc(b.potential) + '</span></div>' +
+        delta +
+        '<div class="risk-row"><span>' + t('ui.potentialShort', null, 'Potencial') + ': ' + c.esc(b.potential) + '</span></div>' +
         '<p>' + c.esc(b.blurb) + '</p>' +
         '<div class="kv"><span>' + t('ui.invested', null, 'Invertido') + '</span><span>' + fmt.money(b.put) + '</span></div>' +
-        '<div class="kv"><span>' + t('ui.variation') + '</span><span class="' + pnlClass(d) + '">' + (d > 0 ? '+' : '') + fmt.money(d) + '</span></div>' +
         '</article>';
     }).join('') + '</div>';
     var sellBody = !done ? '<div class="wealth-invest">' + snap.buckets.filter(function(b){return b.value>0&&b.id!=='tech';}).map(function(b){var n=Math.min(25000,b.value);return '<div class="wealth-invest-row"><div><b>'+t('ui.sellAsset', {name: c.esc(b.name)}, 'Vender '+c.esc(b.name))+'</b><span class="small muted">'+t('ui.exitCostsIncluded', null, 'Incluye costes de salida')+'</span></div>'+c.btn(fmt.money(n),'wealth-withdraw',{value:b.id+':'+n,variant:'ghost'})+'</div>';}).join('') + '</div>' : '';
@@ -18462,6 +18914,8 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       name: t('v2.dash.season') + ' ' + state.year,
       stage: t('ui.tournamentsLead'),
       facts:
+        bxFact(t('hud.mmr', null, 'MMR'), fmt.mmr(state.player.mmr) +
+          c.mmrBar(state.player.mmr, state.player.peakMmr, true), 'bx-fact-mmr') +
         bxFact(t('v2.tour.played'), done.length) +
         bxFact(t('v2.tour.titles'), wonCount) +
         (myTeam ? bxFact(t('ui.team', null, 'Equipo'),
@@ -18470,13 +18924,22 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
           c.esc(D.REGIONS[state.player.region].name) + '</span>')
     });
 
-    var body = '<p class="muted">' + t('ui.noPendingSeries') + '</p>';
+    /* VISUAL-OVERHAUL-01 · panel de espera: estadio vacío abstracto
+       (SVG decorativo), mismos textos y misma lista de resultados. */
+    var body = '<p class="vo-idle-text">' + t('ui.noPendingSeries') + '</p>';
     if (done.length) {
       body += '<p class="small muted mt">' + t('ui.alreadyPlayed') + '</p>' +
-        done.map(function (t, idx) { return c.resultRow(t, false, idx); }).join('');
+        '<div class="vo-idle-list">' + done.map(function (t, idx) { return c.resultRow(t, false, idx); }).join('') + '</div>';
     }
+    var stadium = '<svg class="vo-idle-stadium" viewBox="0 0 400 160" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">' +
+      '<path d="M-20 160A220 120 0 0 1 420 160M10 160A190 100 0 0 1 390 160M40 160A160 80 0 0 1 360 160M70 160A130 60 0 0 1 330 160"/>' +
+      '<path class="vo-idle-tier" d="M-20 160A220 120 0 0 1 420 160L360 160A160 80 0 0 0 40 160Z"/></svg>';
+    var idle = '<section class="card vo-idle">' + stadium +
+      '<div class="vo-idle-in"><span class="vo-idle-ico">' + c.icon(done.length ? 'trophy' : 'calendar') + '</span>' +
+      '<h3 class="vo-idle-title">' + t('ui.noPendingTitle', null, 'Sin serie pendiente') + '</h3>' +
+      body + '</div></section>';
 
-    return head + c.card({ title: t('ui.noPendingTitle', null, 'Sin serie pendiente'), body: body }) +
+    return head + idle +
       seasonCalendarCard(state) + competitionCircuitCard(state);
   };
 
@@ -20182,7 +20645,7 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
       var hud = '<div class="hud">' +
         '<div class="hud-item"><span class="hud-k">' + t('hud.age') + '</span><span class="hud-v">' + p.age + '</span></div>' +
         '<div class="hud-item"><span class="hud-k">' + t('hud.overall') + '</span><span class="hud-v" style="color:var(--gold)">' + p.overall + '</span></div>' +
-        '<div class="hud-item"><span class="hud-k">' + t('hud.mmr') + '</span><span class="hud-v">' + fmt.mmr(p.mmr) + '</span></div>' +
+        '<div class="hud-item hud-mmr"><span class="hud-k">' + t('hud.mmr') + '</span><span class="hud-v">' + fmt.mmr(p.mmr) + '</span>' + c.mmrBar(p.mmr, p.peakMmr) + '</div>' +
         '<div class="hud-item"><span class="hud-k">' + t('hud.rating') + '</span><span class="hud-v">' + (last === null ? t('common.none') : last) + '</span></div>' +
         '<div class="hud-item"><span class="hud-k">' + t('hud.rep') + '</span><span class="hud-v">' + Math.round(p.reputation) + '</span></div>' +
         '<div class="hud-item"><span class="hud-k">$</span><span class="hud-v">' + fmt.money(DCS.engine.finance.snapshot(state).cash) + '</span></div>' +
@@ -20192,7 +20655,7 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
         '<header class="topbar">' +
         '<div class="brand"><i></i><span>DOTA 2</span><b>CAREER</b></div>' +
         '<div class="identity"><span class="nick">' + c.esc(p.nick) + '</span>' +
-        c.posChip(p.role) +
+        c.posChip(p.role, true) +
         '<span class="meta">' + (team ? c.teamMark(team, 'sm') : t('common.freeAgent')) + '</span></div>' +
         '<div class="topbar-right">' + hud +
         (DCS.i18n ? DCS.i18n.langSwitch({ className: 'lang-switch topbar-lang' }) : '') +
