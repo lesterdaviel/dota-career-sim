@@ -536,13 +536,24 @@ DCS.i18n.register("en", {"tourView":{"kicker":{"next":"Next series","live":"Seri
   var V2 = {
     es: {
       home: {
-        eyebrow: 'Simulador de carrera profesional',
-        t1: 'Road to', t2: 'Immortal',
-        k1: 'Una carrera', v1: '16 → retiro', d1: 'Debutas con 16 años y juegas hasta que el circuito te suelta.',
-        k2: 'El circuito', v2: '6 regiones', d2: 'NA · SA · WEU · EEU · CN · SEA. Ligas, clasificatorios, majors y The International.',
-        k3: 'Lo que está en juego', v3: 'Torneos, contratos, legado', d3: 'Cada serie cuenta para tu ranking, tu salario y tu historia.',
-        k4: 'La promesa', v4: 'Sin garantías', d4: 'Ninguna trayectoria está garantizada. Tampoco la tuya.',
-        resume: 'Partida guardada'
+        eyebrow: 'Simulador de carrera profesional'
+      },
+      home2: {
+        concept: 'Tu primer contrato', conceptOn: 'Tu carrera continúa',
+        newPlayer: 'Nuevo jugador', posToChoose: 'Posición por elegir',
+        chipNew: 'Nueva carrera', chipSeason: 'Temporada {{year}}',
+        underContract: 'Con contrato', until: 'Hasta {{year}}',
+        lead: 'Cada temporada cambia tu historia.',
+        start: 'Comenzar carrera',
+        confirmMsg: 'Empezar una nueva carrera borrará la partida de {{nick}}.',
+        confirmYes: 'Sí, empezar de nuevo', confirmNo: 'Cancelar',
+        file: 'Expediente de jugador',
+        player: 'Jugador', debut: 'Debut', age: 'Edad', position: 'Posición',
+        status: 'Situación', contract: 'Contrato', team: 'Equipo', overall: 'Valoración',
+        tbd: 'Por definir', debutAge: '16 años', toChoose: 'Por elegir',
+        freeAgent: 'Agente libre', noContract: 'Sin contrato', retired: 'Retirado',
+        paths: 'Caminos posibles', reached: 'alcanzado', startPoint: 'punto de partida',
+        n1: 'Debut', n2: 'Primer contrato', n3: 'Circuito profesional', n4: 'Legado'
       },
       ceil: { cap: 'Techo', gap: 'Margen', at: 'En su techo', never: 'Sin registro' },
       dash: {
@@ -574,13 +585,24 @@ DCS.i18n.register("en", {"tourView":{"kicker":{"next":"Next series","live":"Seri
     },
     en: {
       home: {
-        eyebrow: 'Pro career simulator',
-        t1: 'Road to', t2: 'Immortal',
-        k1: 'One career', v1: '16 → retirement', d1: 'You debut at 16 and play until the circuit lets you go.',
-        k2: 'The circuit', v2: '6 regions', d2: 'NA · SA · WEU · EEU · CN · SEA. Leagues, qualifiers, majors and The International.',
-        k3: 'What\'s at stake', v3: 'Tournaments, contracts, legacy', d3: 'Every series counts toward your ranking, your salary and your story.',
-        k4: 'The promise', v4: 'No guarantees', d4: 'No path is guaranteed. Yours included.',
-        resume: 'Saved career'
+        eyebrow: 'Pro career simulator'
+      },
+      home2: {
+        concept: 'Your first contract', conceptOn: 'Your career continues',
+        newPlayer: 'New player', posToChoose: 'Position to choose',
+        chipNew: 'New career', chipSeason: 'Season {{year}}',
+        underContract: 'Under contract', until: 'Until {{year}}',
+        lead: 'Every season changes your story.',
+        start: 'Start career',
+        confirmMsg: 'Starting a new career will erase {{nick}}\'s save.',
+        confirmYes: 'Yes, start over', confirmNo: 'Cancel',
+        file: 'Player file',
+        player: 'Player', debut: 'Debut', age: 'Age', position: 'Position',
+        status: 'Status', contract: 'Contract', team: 'Team', overall: 'Overall',
+        tbd: 'To be decided', debutAge: 'Age 16', toChoose: 'To choose',
+        freeAgent: 'Free agent', noContract: 'No contract', retired: 'Retired',
+        paths: 'Possible paths', reached: 'reached', startPoint: 'starting point',
+        n1: 'Debut', n2: 'First contract', n3: 'Pro circuit', n4: 'Legacy'
       },
       ceil: { cap: 'Ceiling', gap: 'Headroom', at: 'At its ceiling', never: 'No record' },
       dash: {
@@ -1658,208 +1680,7 @@ a { color: var(--ember); }
   z-index: 3;
 }
 
-.hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; will-change: auto; }
-
-/* Grano */
-.hero-bg::after {
-  content: "";
-  position: absolute; inset: 0;
-  z-index: 4;
-  opacity: .07;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  background-image:
-    repeating-linear-gradient(0deg, rgba(212, 180, 90, .04) 0 1px, transparent 1px 4px),
-    repeating-linear-gradient(90deg, rgba(0, 0, 0, .08) 0 1px, transparent 1px 5px);
-}
-
-/* --- Arena de esports (VIS-01) ----------------------------------
-   Todo es DOM + gradientes. Solo se animan transform y opacity. */
-.hero-bg > span { position: absolute; pointer-events: none; }
-.hero-bg .arena-sky {
-  inset: 0; z-index: 0;
-  background:
-    radial-gradient(62% 44% at 64% -8%, rgba(255, 168, 92, .30), transparent 70%),
-    radial-gradient(34% 26% at 88% 8%, rgba(255, 120, 64, .12), transparent 70%),
-    linear-gradient(180deg, #0b0e18 0%, #0d1120 44%, #07090f 100%);
-}
-
-/* Pantallas LED en perspectiva con barras de datos abstractas. */
-.hero-bg .arena-screens { inset: 0; z-index: 1; }
-.arena-screen {
-  position: absolute; display: block; overflow: hidden;
-  border: 1px solid rgba(255, 196, 140, .16); border-radius: 3px;
-  background: linear-gradient(180deg, rgba(22, 30, 52, .78), rgba(10, 14, 26, .82));
-  box-shadow: 0 0 40px rgba(255, 150, 80, .10), inset 0 0 24px rgba(120, 160, 255, .08);
-  opacity: .78;
-}
-.arena-screen::before {
-  content: ""; position: absolute; inset: 16% 12% 14%;
-  background:
-    linear-gradient(90deg, rgba(255, 176, 96, .55) 0 64%, transparent 64%) 0 0 / 100% 6% no-repeat,
-    linear-gradient(90deg, rgba(150, 190, 255, .36) 0 40%, transparent 40%) 0 14% / 100% 6% no-repeat,
-    linear-gradient(90deg, rgba(150, 190, 255, .26) 0 82%, transparent 82%) 0 28% / 100% 6% no-repeat,
-    linear-gradient(90deg, rgba(255, 176, 96, .32) 0 52%, transparent 52%) 0 42% / 100% 6% no-repeat,
-    repeating-linear-gradient(90deg, rgba(150, 190, 255, .2) 0 7%, transparent 7% 11%) 0 100% / 100% 38% no-repeat;
-}
-.arena-screen.s2::before, .arena-screen.s4::before { transform: scaleX(-1); }
-.arena-screen::after {
-  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 28%;
-  background: linear-gradient(180deg, transparent, rgba(255, 210, 160, .10), transparent);
-  animation: arenaScan 11s linear infinite;
-}
-.arena-screen.s2::after { animation-delay: -3s; }
-.arena-screen.s3::after { animation-delay: -6s; }
-.arena-screen.s4::after { animation-delay: -8.5s; }
-.arena-screen.s1 { left: 30%; top: 9%;  width: 15%; height: 15%; transform: perspective(900px) rotateY(26deg); opacity: .5; }
-.arena-screen.s2 { left: 47%; top: 6%;  width: 19%; height: 19%; transform: perspective(900px) rotateY(10deg); }
-.arena-screen.s3 { left: 68%; top: 6%;  width: 19%; height: 19%; transform: perspective(900px) rotateY(-10deg); }
-.arena-screen.s4 { left: 89%; top: 9%;  width: 15%; height: 15%; transform: perspective(900px) rotateY(-26deg); opacity: .5; }
-@keyframes arenaScan {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(360%); }
-}
-
-/* Haces de foco: conos cálidos que barren despacio. */
-.hero-bg .arena-beam {
-  z-index: 2; top: -6%; width: 22vw; height: 110%;
-  transform-origin: 50% 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 206, 150, .16) 50%, transparent);
-  -webkit-mask-image: linear-gradient(180deg, #000, transparent 82%);
-  mask-image: linear-gradient(180deg, #000, transparent 82%);
-  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
-  opacity: .5;
-  animation: arenaSweep 17s ease-in-out infinite alternate;
-}
-.hero-bg .arena-beam.b1 { left: 40%; }
-.hero-bg .arena-beam.b2 { left: 62%; animation-duration: 20s; animation-delay: -7s; }
-.hero-bg .arena-beam.b3 { left: 80%; animation-duration: 14s; animation-delay: -4s; opacity: .4; }
-@keyframes arenaSweep {
-  0% { transform: rotate(-14deg); }
-  100% { transform: rotate(14deg); }
-}
-
-/* Suelo de escenario con rejilla en perspectiva. */
-.hero-bg .arena-floor {
-  z-index: 3; left: -40%; right: -40%; bottom: -4%; height: 62%;
-  transform: perspective(620px) rotateX(64deg);
-  transform-origin: 50% 100%;
-  background:
-    repeating-linear-gradient(90deg, rgba(255, 180, 110, .13) 0 1px, transparent 1px 72px),
-    repeating-linear-gradient(0deg, rgba(255, 180, 110, .11) 0 1px, transparent 1px 72px),
-    linear-gradient(0deg, rgba(14, 18, 30, .9), rgba(14, 18, 30, .2));
-  -webkit-mask-image: linear-gradient(0deg, #000 10%, transparent 92%);
-  mask-image: linear-gradient(0deg, #000 10%, transparent 92%);
-}
-
-/* El camino: cuatro plataformas que ascienden hacia la cima. */
-/* Va por encima de la sombra (z 6) para no quedar apagado por ella,
-   pero bajo la viñeta y con opacidad moderada para no competir. */
-.hero-bg .arena-path {
-  /* bottom 36 % deja p1 por encima de .bx-home-strip (1440×900 y
-     1280×800); --h 36vh mantiene el halo bajo las pantallas LED. */
-  --h: min(36vh, 330px);
-  z-index: 7; right: 3%; bottom: 36%;
-  width: min(42vw, 600px); height: var(--h);
-  opacity: .82;
-}
-/* Trazo de luz tenue que une los centros de p1 y p4. Con "to bottom
-   right" la isolínea del 50 % va de abajo-izquierda a arriba-derecha. */
-.hero-bg .arena-path::before {
-  content: ""; position: absolute; left: 8%; right: 18%; bottom: 0; top: 22%;
-  background: linear-gradient(to bottom right, transparent calc(50% - 7px), rgba(255, 196, 130, .10) calc(50% - 3px), rgba(255, 214, 160, .22) 50%, rgba(255, 196, 130, .10) calc(50% + 3px), transparent calc(50% + 7px));
-}
-/* Cada plataforma: cara superior luminosa + frente (::after) +
-   montante de luz (::before) que baja hasta el escalón anterior. */
-.arena-step {
-  position: absolute; display: block; height: 10px; border-radius: 2px;
-  transform: skewX(-18deg);
-  background: linear-gradient(180deg, #ffe6c2, #ffb066);
-  box-shadow: 0 0 18px rgba(255, 176, 96, .4);
-  animation: arenaStep 7s ease-in-out infinite;
-}
-.arena-step::after {
-  content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 16px;
-  background: linear-gradient(180deg, rgba(255, 150, 70, .55), rgba(255, 130, 60, 0));
-}
-.arena-step::before {
-  content: ""; position: absolute; left: 0; top: 100%; width: 2px;
-  height: calc(var(--h) * .26);
-  background: linear-gradient(180deg, rgba(255, 210, 150, .55), transparent);
-}
-.arena-step.p1::before { display: none; }
-.arena-step.p1 { left: 0;   bottom: 0;   width: 17%; opacity: .5; }
-.arena-step.p2 { left: 22%; bottom: 26%; width: 20%; opacity: .66; animation-delay: .6s; }
-.arena-step.p3 { left: 44%; bottom: 52%; width: 24%; opacity: .82; animation-delay: 1.2s; box-shadow: 0 0 26px rgba(255, 176, 96, .5); }
-.arena-step.p4 { left: 66%; bottom: 78%; width: 28%; opacity: 1;   animation-delay: 1.8s; box-shadow: 0 0 34px rgba(255, 186, 110, .6), 0 0 80px rgba(255, 160, 80, .25); }
-/* Halo de la cima, centrado sobre p4. */
-.arena-peak {
-  position: absolute; display: block; left: calc(80% - 8px); bottom: calc(78% + 34px);
-  width: 16px; height: 16px; border-radius: 50%;
-  background: #fff4de;
-  box-shadow: 0 0 30px 10px rgba(255, 204, 140, .55), 0 0 110px 40px rgba(255, 168, 90, .22);
-  animation: arenaPeak 6s ease-in-out infinite;
-}
-@keyframes arenaStep {
-  0%, 100% { transform: skewX(-18deg) translateY(0); }
-  50% { transform: skewX(-18deg) translateY(-3px); }
-}
-@keyframes arenaPeak {
-  0%, 100% { opacity: .8; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.18); }
-}
-
-/* Partículas lentas. */
-.hero-bg .arena-motes { inset: 0; z-index: 5; }
-.hero-bg .arena-motes.a {
-  background:
-    radial-gradient(2px 2px at 58% 34%, rgba(255, 214, 160, .6), transparent 70%),
-    radial-gradient(1.5px 1.5px at 72% 58%, rgba(255, 196, 140, .45), transparent 70%),
-    radial-gradient(2px 2px at 86% 42%, rgba(255, 214, 160, .5), transparent 70%),
-    radial-gradient(1.5px 1.5px at 44% 22%, rgba(190, 210, 255, .35), transparent 70%);
-  animation: arenaDrift 22s ease-in-out infinite;
-}
-.hero-bg .arena-motes.b {
-  background:
-    radial-gradient(1.5px 1.5px at 66% 18%, rgba(255, 214, 160, .45), transparent 70%),
-    radial-gradient(2px 2px at 78% 72%, rgba(255, 196, 140, .35), transparent 70%),
-    radial-gradient(1.5px 1.5px at 92% 26%, rgba(190, 210, 255, .3), transparent 70%);
-  animation: arenaDrift 28s ease-in-out infinite reverse;
-}
-@keyframes arenaDrift {
-  0%, 100% { transform: translate3d(0, 0, 0); opacity: .45; }
-  50% { transform: translate3d(-8px, -18px, 0); opacity: .9; }
-}
-
-/* Legibilidad: sombra bajo el bloque de texto + viñeta. */
-.hero-bg .arena-shade {
-  inset: 0; z-index: 6;
-  background:
-    linear-gradient(90deg, rgba(5, 7, 12, .9) 0%, rgba(5, 7, 12, .66) 32%, rgba(5, 7, 12, .18) 56%, transparent 70%),
-    linear-gradient(0deg, rgba(5, 7, 12, .88) 0%, rgba(5, 7, 12, .3) 40%, transparent 60%);
-}
-.hero-bg .arena-vignette {
-  inset: 0; z-index: 7;
-  background: radial-gradient(130% 110% at 62% 38%, transparent 56%, rgba(0, 0, 0, .6) 100%);
-}
-
-@media (max-width: 768px) {
-  .hero-bg .arena-path { --h: 30vh; z-index: 4; right: 2%; bottom: auto; top: 12%; width: 66vw; opacity: .4; }
-  .hero-bg .arena-beam { width: 40vw; }
-  .arena-screen.s1, .arena-screen.s4 { display: none; }
-  .arena-screen.s2 { left: 18%; width: 34%; top: 7%; }
-  .arena-screen.s3 { left: 56%; width: 34%; top: 7%; }
-  .hero-bg .arena-shade {
-    background: linear-gradient(0deg, rgba(5, 7, 12, .94) 0%, rgba(5, 7, 12, .78) 55%, rgba(5, 7, 12, .3) 100%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .hero-bg .arena-beam,
-  .hero-bg .arena-motes,
-  .arena-screen::after,
-  .arena-step,
-  .arena-peak { animation: none !important; }
   .hero-title h1 { animation: none; }
 }
 
@@ -1880,18 +1701,6 @@ a { color: var(--ember); }
 }
 .hero-brand span { color: var(--text-2); }
 .hero-brand b { color: var(--text); font-weight: 800; }
-/* Filete Radiant/Dire: la oposición que de verdad identifica
-   Dota, en vez de paisaje genérico. Único uso previsto para
-   estos dos tokens ("solo para la portada", ya declarados en
-   :root sin usar). */
-.hero-factions {
-  display: block;
-  width: 84px;
-  height: 2px;
-  margin: 16px auto 0;
-  background: linear-gradient(90deg, var(--radiant), transparent 46%, transparent 54%, var(--dire));
-  opacity: .85;
-}
 
 .hero-title {
   position: relative;
@@ -4011,9 +3820,6 @@ a { color: var(--ember); }
   font-size: 12px; font-weight: 700; letter-spacing: .2em;
   text-transform: uppercase; color: var(--bx-ink-3);
 }
-.bx-home-title .bx-eyebrow {
-  color: #b8c8d8; text-shadow: 0 1px 10px rgba(4, 8, 12, .85);
-}
 .bx-eyebrow b { color: var(--accent); font-weight: 700; }
 .bx-display {
   font-family: var(--bx-display);
@@ -4038,47 +3844,147 @@ a { color: var(--ember); }
    Composición anclada abajo-izquierda en vez de centrada: deja
    respirar el lado Dire del mapa y da al título escala de cartel.
    ============================================================ */
+/* HOME-02 · «Tu primer contrato»: fondo sólido con rejilla tenue,
+   barra de marca + idioma, titular a la izquierda y expediente. */
 .hero-stage.bx-home {
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: stretch;
   padding: 0;
-}
-.bx-home-grid {
-  position: relative; z-index: 1;
-  width: 100%; max-width: 1360px; margin: 0 auto;
-  padding: 0 clamp(20px, 4vw, 64px) clamp(28px, 4vw, 56px);
-  display: flex; flex-direction: column; gap: 0;
+  background:
+    linear-gradient(rgba(158, 190, 224, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(90deg, rgba(158, 190, 224, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+    linear-gradient(180deg, #0e131b 0%, var(--bg) 60%);
 }
 .bx-home-top {
-  position: absolute; z-index: 2;
-  top: max(20px, env(safe-area-inset-top));
-  left: clamp(20px, 4vw, 64px);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; max-width: 1360px; margin: 0 auto;
+  padding: max(18px, env(safe-area-inset-top)) clamp(20px, 4vw, 64px) 0;
 }
-.bx-home-title h1 {
-  max-width: 15ch;
-  margin: 10px 0 0;
+.bx-home-top .hero-brand { font-size: 15px; min-width: 0; }
+.bx-home-grid {
+  width: 100%; max-width: 1360px; margin: 0 auto;
+  padding: clamp(24px, 4vh, 48px) clamp(20px, 4vw, 64px);
+  display: grid; grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
+  gap: clamp(28px, 4vw, 72px); align-items: start;
+  animation: bxHomeIn .26s ease-out both;
+}
+@keyframes bxHomeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.bx-home-main .bx-eyebrow { color: var(--text-2); }
+.bx-home-h1 {
+  margin: 12px 0 0;
   font-family: var(--bx-display);
-  font-size: clamp(48px, 7vw, 104px);
-  line-height: .86;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -.018em;
-  color: #fbf6ec;
-  text-shadow: 0 4px 0 rgba(0, 0, 0, .55), 0 24px 60px rgba(0, 0, 0, .6);
+  font-size: clamp(48px, 6.4vw, 100px);
+  line-height: .88; font-weight: 700;
+  text-transform: uppercase; letter-spacing: -.012em;
+  color: var(--bx-ink);
 }
-/* La segunda palabra es lo que está en juego: se marca en oro,
-   que en este sistema significa "lo ganado". */
-.bx-home-title h1 em {
-  display: block; font-style: normal;
-  color: var(--gold);
-  text-shadow: 0 4px 0 rgba(0, 0, 0, .55), 0 0 44px rgba(255, 194, 71, .28);
+.bx-home-concept {
+  margin: 14px 0 0;
+  font-family: var(--bx-display);
+  font-size: clamp(24px, 2.4vw, 34px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .02em;
+  color: var(--ember);
 }
 .bx-home-lead {
-  margin: 18px 0 0; max-width: 46ch;
-  color: #d6e1eb; font-size: 16px; line-height: 1.5;
-  text-shadow: 0 1px 12px rgba(4, 8, 12, .8);
+  margin: 10px 0 0; max-width: 46ch;
+  color: var(--text-2); font-size: 16px; line-height: 1.5;
 }
 .bx-home-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 26px; }
+.bx-home-actions .btn-lg:not(.btn-primary) { min-height: 56px; }
+.bx-home-actions .btn:focus-visible,
+.bx-home-confirm .btn:focus-visible { outline: 3px solid #fff4de; outline-offset: 3px; }
+.bx-home-confirm {
+  margin-top: 16px; padding: 14px 16px; max-width: 520px;
+  background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--ember);
+}
+.bx-home-confirm:focus-visible { outline: 3px solid #fff4de; outline-offset: 2px; }
+.bx-home-confirm p { margin: 0; color: var(--text); font-size: 15px; }
+.bx-home-confirm-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+/* Expediente de jugador: ficha de contrato, una sola superficie. */
+.bx-file {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+  padding: 0 0 18px;
+}
+.bx-file-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 14px 20px; border-bottom: 1px solid var(--line);
+  border-top: 3px solid var(--ember); border-radius: 4px 4px 0 0;
+}
+.bx-file-k {
+  font-size: 12px; font-weight: 700; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.bx-chip {
+  display: inline-block; padding: 3px 8px; border: 1px solid var(--line); border-radius: 3px;
+  font-family: var(--mono); font-size: 11.5px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-2); white-space: nowrap;
+}
+.bx-file-id { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+.bx-file-pos { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 12px; }
+.bx-file-role { font-family: var(--mono); font-size: 13px; color: var(--text-2); }
+.bx-file-rows { margin: 0; padding: 4px 20px 0; }
+.bx-file-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+}
+.bx-file-row dt {
+  font-size: 12px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.bx-file-row dd {
+  margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--text); text-align: right;
+}
+.bx-file-nick {
+  font-family: var(--bx-display); font-size: clamp(32px, 3vw, 40px); font-weight: 700;
+  line-height: 1; letter-spacing: .01em; color: var(--bx-ink); overflow-wrap: anywhere;
+}
+.bx-file-nick.is-empty { color: var(--text-3); }
+.bx-pos { display: inline-flex; gap: 6px; }
+.bx-pos i {
+  width: 30px; height: 30px; display: inline-grid; place-items: center;
+  font-style: normal; font-family: var(--mono); font-size: 13px; font-weight: 700;
+  border: 1px solid var(--line); color: var(--text-3);
+}
+.bx-pos i.on { background: var(--ember); border-color: var(--ember); color: #1a0c05; font-weight: 700; }
+.bx-file-path { padding: 16px 20px 0; }
+.bx-path { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.bx-path li { position: relative; display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-2); }
+.bx-path li > i {
+  position: relative; z-index: 1; width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--text-3); background: var(--panel);
+}
+.bx-path li.on { color: var(--text); font-weight: 700; }
+.bx-path li.on > i { border-color: var(--ember); background: var(--ember); }
+/* Línea discontinua: posibilidad, no garantía. */
+.bx-path li + li::before {
+  content: ""; position: absolute; top: 5px; right: calc(100% - 4px); width: calc(100% - 20px);
+  border-top: 2px dashed var(--line);
+}
+.bx-sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+/* Escritorio: el bloque se centra en el alto que deja la barra,
+   con el mismo aire arriba y abajo. */
+@media (min-width: 901px) {
+  .bx-home-grid { flex: 1 0 auto; align-content: center; }
+}
+@media (max-width: 900px) {
+  .bx-home-grid { grid-template-columns: minmax(0, 1fr); align-items: start; }
+}
+@media (max-width: 480px) {
+  .bx-home-top .hero-brand { font-size: 12px; letter-spacing: .14em; gap: 8px; }
+  .bx-home-h1 { font-size: 46px; }
+  .bx-home-grid { padding-top: 20px; gap: 32px; }
+  .bx-home-actions { margin-top: 20px; }
+  .bx-home-actions .btn-lg { min-width: 0; flex: 1 1 100%; }
+  .bx-file-row { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bx-home-grid { animation: none; }
+}
 .bx-home-actions .btn-lg { min-width: 208px; min-height: 52px; }
 /* CTA protagonista: la única pieza cálida y brillante del bloque. */
 .bx-home-actions .btn-primary.btn-lg {
@@ -4105,8 +4011,8 @@ a { color: var(--ember); }
 }
 
 /* Selector de idioma de portada: control segmentado ES | EN. */
-.hero-stage > .lang-switch-home {
-  gap: 0; padding: 3px;
+.bx-home-top > .lang-switch-home {
+  gap: 0; padding: 3px; flex: none;
   border: 1px solid rgba(255, 220, 180, .22); border-radius: 999px;
   background: rgba(8, 11, 18, .72);
   backdrop-filter: blur(6px);
@@ -4120,55 +4026,13 @@ a { color: var(--ember); }
 }
 .lang-switch-home .lang-btn + .lang-btn { position: relative; }
 .lang-switch-home .lang-btn:hover { color: #fff; background: rgba(255, 255, 255, .08); }
-.lang-switch-home .lang-btn:focus-visible { color: #fff; outline: 2px solid #fff4de; outline-offset: 1px; }
+.lang-switch-home .lang-btn:focus-visible { color: #fff; outline: 3px solid #fff4de; outline-offset: 1px; }
 .lang-switch-home .lang-btn.active { color: #1a1206; background: var(--gold, #d4a84b); }
 /* Táctil: 40 px de alto; la pastilla mide 46 px y la barra superior
    (.bx-home-grid con padding-top: 88px) sigue dejando hueco de sobra. */
 @media (max-width: 768px) {
   .lang-switch-home .lang-btn { min-height: 40px; padding: 4px 14px; }
 }
-
-/* Tira inferior: el contrato emocional del juego, con las tres
-   coordenadas reales de una carrera. No es relleno: es lo que
-   define el producto. */
-.bx-home-strip {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px; margin-top: clamp(28px, 4vw, 48px);
-  border-top: 1px solid var(--bx-rule-2);
-  background: var(--bx-rule);
-}
-.bx-home-cell {
-  background: rgba(8, 13, 19, .62);
-  backdrop-filter: blur(5px);
-  padding: 16px 18px 18px;
-}
-.bx-home-cell .k {
-  font-size: var(--fz-label); letter-spacing: .14em; text-transform: uppercase;
-  color: var(--bx-ink-3); font-weight: 700;
-}
-.bx-home-cell .v {
-  margin-top: 6px; font-family: var(--bx-display); font-size: 30px;
-  font-weight: 700; letter-spacing: .01em; color: var(--bx-ink); line-height: 1;
-}
-.bx-home-cell .d { margin-top: 5px; font-size: 12.5px; color: var(--bx-ink-2); }
-
-/* Reanudar carrera: un lower-third de retransmisión con los datos
-   reales de la partida guardada (store.peek ya los devuelve). */
-.bx-resume {
-  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-  margin-top: 22px; padding: 14px 18px;
-  background: rgba(10, 16, 23, .8);
-  backdrop-filter: blur(5px);
-  border-left: 3px solid var(--accent);
-  backdrop-filter: blur(6px);
-}
-.bx-resume-k {
-  font-size: 11.5px; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--bx-ink-3); font-weight: 700;
-}
-.bx-resume-v { font-family: var(--bx-display); font-size: 26px; font-weight: 700; letter-spacing: .01em; }
-.bx-resume-meta { color: var(--bx-ink-2); font-size: 13px; }
-.bx-resume-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
 .bx-home-foot {
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
@@ -4183,7 +4047,7 @@ a { color: var(--ember); }
   text-shadow: 0 1px 10px rgba(4, 8, 12, .9);
   transition: color var(--dur-fast) var(--ease-out);
 }
-.bx-home-foot .about-link:focus-visible { color: #ffffff; }
+.bx-home-foot .about-link:focus-visible { color: #ffffff; outline: 3px solid #fff4de; outline-offset: 2px; }
 @media (hover: hover) and (pointer: fine) {
   .bx-home-foot .about-link:hover { color: #ffffff; }
 }
@@ -4712,21 +4576,6 @@ a { color: var(--ember); }
   .bx-score-next { margin-left: 0; }
   .bx-rail-step { flex: 1 1 100%; }
 
-  /* Con partida guardada la columna crece y chocaba con el lockup,
-     que va posicionado. Se le reserva su banda arriba. */
-  .bx-home-grid { padding-top: 88px; padding-bottom: 28px; }
-  .bx-home-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .bx-home-cell .v { font-size: 24px; }
-  .bx-resume { gap: 12px; }
-  .bx-resume-actions { margin-left: 0; width: 100%; }
-  .bx-resume-actions .btn { flex: 1; }
-  .bx-home-actions .btn-lg { min-width: 0; flex: 1 1 100%; }
-}
-@media (max-width: 480px) {
-  .bx-home-strip { grid-template-columns: minmax(0, 1fr); }
-  .bx-home-cell { padding: 12px 16px 14px; }
-  .bx-home-title h1 { max-width: 100%; overflow-wrap: anywhere; }
-  .bx-home-lead { font-size: 15px; }
 }
 
 @media (max-width: 400px) {
@@ -15037,7 +14886,16 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
         var t = DCS.engine.world.getTeam(s, s.player.teamId);
         return t ? t.tier : null;
       })(),
-      seed: s.seed
+      seed: s.seed,
+      /* HOME-02: hitos de solo lectura para el recorrido de la portada */
+      /* último año cubierto: el contrato no descuenta la temporada en que se firma */
+      contractUntil: (s.player.teamId && s.player.contract && s.player.contract.years > 0)
+        ? s.year + s.player.contract.years - (s.player.contract.signedYear === s.year ? 0 : 1) : null,
+      hadTeam: !!s.player.teamId || (s.history || []).some(function (h) { return !!h.teamId; }),
+      playedT1: (function () {
+        var t = DCS.engine.world.getTeam(s, s.player.teamId);
+        return (!!t && t.tier === 1) || (s.history || []).some(function (h) { return h.tier === 1; });
+      })()
     };
   }
 
@@ -16887,83 +16745,86 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
 
   S.home = function () {
     var save = DCS.store.peek();
+    var h2 = function (k, v) { return t('v2.home2.' + k, v); };
+    var row = function (k, v, cls) {
+      return '<div class="bx-file-row' + (cls ? ' ' + cls : '') + '"><dt>' + k + '</dt><dd>' + v + '</dd></div>';
+    };
+    /* HOME-02: portada «Tu primer contrato». Marca + idioma arriba,
+       titular y acciones a la izquierda, expediente a la derecha. */
     var html = '<div class="hero-stage bx-home">' +
-      (DCS.i18n ? DCS.i18n.langSwitch({ className: 'lang-switch lang-switch-home' }) : '') +
-      '<div class="hero-bg" aria-hidden="true">' +
-      /* Arena de esports: cielo, pantallas LED, focos, suelo de
-         escenario y un camino de cuatro plataformas hacia la cima. */
-      '<span class="arena-sky"></span>' +
-      '<span class="arena-screens">' +
-      '<i class="arena-screen s1"></i><i class="arena-screen s2"></i>' +
-      '<i class="arena-screen s3"></i><i class="arena-screen s4"></i>' +
-      '</span>' +
-      '<span class="arena-beam b1"></span>' +
-      '<span class="arena-beam b2"></span>' +
-      '<span class="arena-beam b3"></span>' +
-      '<span class="arena-floor"></span>' +
-      '<span class="arena-path">' +
-      '<i class="arena-step p1"></i><i class="arena-step p2"></i>' +
-      '<i class="arena-step p3"></i><i class="arena-step p4"></i>' +
-      '<i class="arena-peak"></i>' +
-      '</span>' +
-      '<span class="arena-motes a"></span>' +
-      '<span class="arena-motes b"></span>' +
-      '<span class="arena-shade"></span>' +
-      '<span class="arena-vignette"></span>' +
-      '</div>' +
-      /* Marca arriba a la izquierda: la composición se ancla abajo,
-         así que el lockup deja de compartir eje con el título. */
       '<div class="bx-home-top">' +
-      '<div class="hero-brand"><i></i><span>DOTA 2</span><b>CAREER</b></div>' +
-      '<span class="hero-factions" aria-hidden="true"></span>' +
+      '<div class="hero-brand" aria-hidden="true"><i></i></div>' +
+      (DCS.i18n ? DCS.i18n.langSwitch({ className: 'lang-switch lang-switch-home' }) : '') +
       '</div>' +
       '<div class="bx-home-grid">' +
-      '<div class="bx-home-title">' +
+      '<div class="bx-home-main">' +
       '<div class="bx-eyebrow">' + t('v2.home.eyebrow') + '</div>' +
-      '<h1>' + t('v2.home.t1') + '<em>' + t('v2.home.t2') + '</em></h1>' +
-      '</div>' +
-      '<p class="bx-home-lead">' + t('home.lead') + '</p>' +
-      '<div class="bx-home-actions">' +
-      c.btn(t('home.newCareer'), 'new-career', { variant: 'primary', size: 'lg' }) +
-      (save ? c.btn(t('home.continueCareer'), 'continue', { size: 'lg' }) : '') +
-      '</div>';
-
-    /* Reanudar deja de ser un botón anónimo: la partida guardada se
-       presenta como un rótulo de retransmisión con sus datos reales
-       (store.peek ya los devuelve, no hace falta cargar el estado). */
+      '<h1 class="bx-home-h1">Dota Career Sim</h1>' +
+      '<p class="bx-home-concept">' + h2(save ? 'conceptOn' : 'concept') + '</p>' +
+      '<p class="bx-home-lead">' + h2('lead') + '</p>' +
+      '<div class="bx-home-actions">';
     if (save) {
-      html += '<div class="bx-resume">' +
-        '<div><div class="bx-resume-k">' + t('v2.home.resume') + '</div>' +
-        '<div class="bx-resume-v">' + c.esc(save.nick) + '</div></div>' +
-        '<div class="bx-resume-meta">' +
-        c.esc(save.teamName) + (save.tier ? ' · Tier ' + save.tier : '') +
-        ' · ' + t('v2.dash.season') + ' ' + save.year +
-        ' · ' + t('common.years', { count: save.age }) +
-        ' · ' + t('v2.dash.overall') + ' ' + save.overall +
-        '</div>' +
-        '<div class="bx-resume-actions">' +
-        c.btn(t('home.wipe'), 'wipe', { variant: 'danger' }) +
+      html += c.btn(t('home.continueCareer'), 'continue', { variant: 'primary', size: 'lg' }) +
+        '<button type="button" class="btn btn-lg" data-action="home-new-ask" aria-controls="bx-home-confirm" aria-expanded="false">' +
+        t('home.newCareer') + '</button>';
+    } else {
+      html += c.btn(h2('start'), 'new-career', { variant: 'primary', size: 'lg' });
+    }
+    html += '</div>';
+    /* Nueva carrera con partida: aviso inline, nunca window.confirm. */
+    if (save) {
+      html += '<div class="bx-home-confirm" id="bx-home-confirm" role="alertdialog" aria-modal="false"' +
+        ' aria-labelledby="bx-home-confirm-msg" tabindex="-1" hidden>' +
+        '<p id="bx-home-confirm-msg">' + h2('confirmMsg', { nick: c.esc(save.nick) }) + '</p>' +
+        '<div class="bx-home-confirm-row">' +
+        c.btn(h2('confirmYes'), 'home-new-confirm', { variant: 'danger' }) +
+        c.btn(h2('confirmNo'), 'home-new-cancel') +
         '</div></div>';
     }
-
     if (!DCS.store.persistent) {
       html += '<p class="hero-note">' + t('home.storageBlocked') + '</p>';
     }
-
-    /* Las cuatro coordenadas del producto. No es relleno: define qué
-       tipo de carrera se juega aquí. */
-    html += '<div class="bx-home-strip">' +
-      ['1', '2', '3', '4'].map(function (i) {
-        return '<div class="bx-home-cell">' +
-          '<div class="k">' + t('v2.home.k' + i) + '</div>' +
-          '<div class="v">' + t('v2.home.v' + i) + '</div>' +
-          '<div class="d">' + t('v2.home.d' + i) + '</div>' +
-          '</div>';
-      }).join('') + '</div>';
-
     html += '<div class="bx-home-foot">' +
       '<button type="button" class="about-link" data-action="open-about">' + t('home.about') + '</button>' +
-      '</div>';
+      '</div></div>';
+
+    /* Expediente: solo datos reales del guardado; sin partida, campos vacíos. */
+    var role = save && DCS.data.ROLES[save.role];
+    var pos = '<span class="bx-pos" aria-hidden="true">' + [1, 2, 3, 4, 5].map(function (n) {
+      return '<i' + (role && role.pos === n ? ' class="on"' : '') + '>' + n + '</i>';
+    }).join('') + '</span>';
+    /* Bloque de identidad arriba (nick + POS); debajo, solo lo esencial. */
+    var ident = '<div class="bx-file-id">' +
+      '<div class="bx-file-nick' + (save ? '' : ' is-empty') + '">' + (save ? c.esc(save.nick) : h2('newPlayer')) + '</div>' +
+      '<div class="bx-file-pos">' + pos + '<span class="bx-file-role">' +
+      (role ? role.short + ' · ' + c.esc(role.name) : h2('posToChoose')) + '</span></div></div>';
+    var rows;
+    if (save) {
+      rows = row(h2('status'), save.finished ? h2('retired') : (save.teamId ? h2('underContract') : h2('freeAgent'))) +
+        row(h2('team'), save.teamId
+          ? c.esc(save.teamName) + (save.tier ? ' <span class="bx-chip">Tier ' + save.tier + '</span>' : '')
+          : t('common.noTeam')) +
+        (save.contractUntil && !save.finished ? row(h2('contract'), h2('until', { year: save.contractUntil })) : '') +
+        row(h2('age'), t('common.years', { count: save.age })) +
+        row(h2('overall'), String(save.overall));
+    } else {
+      rows = row(h2('debut'), h2('debutAge')) +
+        row(h2('status'), h2('freeAgent')) +
+        row(h2('contract'), h2('noContract'));
+    }
+    var reached = save ? [true, save.hadTeam, save.playedT1, save.finished] : [true, false, false, false];
+    var path = [1, 2, 3, 4].map(function (n, i) {
+      return '<li' + (reached[i] ? ' class="on"' : '') + '><i aria-hidden="true"></i><span>' + h2('n' + n) +
+        (reached[i] ? '<span class="bx-sr"> · ' + h2(save ? 'reached' : 'startPoint') + '</span>' : '') + '</span></li>';
+    }).join('');
+    html += '<section class="bx-file" role="group" aria-label="' + h2('file') + '">' +
+      '<header class="bx-file-head"><span class="bx-file-k">' + h2('file') + '</span>' +
+      '<span class="bx-chip">' + (save ? h2('chipSeason', { year: save.year }) : h2('chipNew')) + '</span></header>' +
+      ident +
+      '<dl class="bx-file-rows">' + rows + '</dl>' +
+      '<div class="bx-file-path"><div class="bx-file-k">' + h2('paths') + '</div>' +
+      '<ol class="bx-path">' + path + '</ol></div>' +
+      '</section>';
     html += '</div></div>';
     return html;
   };
@@ -20729,6 +20590,25 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
           app.go('create');
           return;
 
+        /* HOME-02: confirmación inline de «Nueva carrera» en la portada */
+        case 'home-new-ask':
+        case 'home-new-cancel': {
+          var cf = document.getElementById('bx-home-confirm');
+          var ask = document.querySelector('[data-action="home-new-ask"]');
+          if (!cf) return;
+          var open = action === 'home-new-ask';
+          cf.hidden = !open;
+          if (ask) ask.setAttribute('aria-expanded', open ? 'true' : 'false');
+          if (open) cf.focus(); else if (ask) ask.focus();
+          return;
+        }
+
+        case 'home-new-confirm':
+          DCS.game.reset();
+          app.draft = app.newDraft();
+          app.go('create');
+          return;
+
         case 'wipe':
           if (!confirm(DCS.t('game.wipeConfirm', null, 'Se borrará la carrera guardada. ¿Seguro?'))) return;
           DCS.game.reset();
@@ -21299,6 +21179,15 @@ DCS.assetsInline['tour-dreamleague'] = 'data:image/png;base64,iVBORw0KGgoAAAANSU
           DCS.ui.anim.closeWinnerOverlay();
         }
         return;
+      }
+
+      if (e.key === 'Escape' && app.view === 'home') {
+        var homeCf = document.getElementById('bx-home-confirm');
+        if (homeCf && !homeCf.hidden) {
+          e.preventDefault();
+          app.handle('home-new-cancel');
+          return;
+        }
       }
 
       if (e.key === 'Escape' && app.view === 'about') {
