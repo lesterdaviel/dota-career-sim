@@ -6,7 +6,7 @@
    (a) history estable tras guardar y cargar dos veces,
    (b) todos los equipos tienen tierHistory (tras jugar y tras migrar),
    (c) cargar no reescribe tierHistory,
-   (d) TEAM_SNAPSHOT sin fecha ni fuentes (no se presenta como actual).
+   (d) TEAM_SNAPSHOT fechado (catálogo DLTV del 2026-11-23) y con al menos una fuente.
    Referencia (120 carreras PROG-i, tras ajustar rollPotential el 23 nov
    2026): T2 54,2 %, T1 16,7 %, años a T1 mediana 11 (p10 7, p90 18), 33 %
    de temporadas sin equipo, títulos mediana 2 / p90 8 / máx 33, TI en 4
@@ -109,7 +109,7 @@ function summary(rows) {
 }
 
 const snap = DCS.data.TEAM_SNAPSHOT;
-if (!snap || snap.asOf !== null || !Array.isArray(snap.sources) || snap.sources.length) fail('TEAM_SNAPSHOT debe tener asOf null y sources []');
+if (!snap || snap.asOf !== '2026-11-23' || !Array.isArray(snap.sources) || snap.sources.length < 1) fail("TEAM_SNAPSHOT debe tener asOf '2026-11-23' y al menos una fuente");
 
 const initial = [];
 for (let i = 0; i < 120; i++) {

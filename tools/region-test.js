@@ -22,23 +22,25 @@ try {
   const nat = { 'Turquía': 'eeu', 'Arabia Saudita': 'eeu', 'Egipto': 'weu', 'Marruecos': 'weu', 'Nigeria': 'weu', 'Sudáfrica': 'weu', 'Kenia': 'weu' };
   Object.keys(nat).forEach(n => assert.strictEqual(D.regionForNationality(n), nat[n], 'nacionalidad ' + n));
 
-  // 4. Mundo nuevo con los 12 equipos reubicados
+  // 4. Los 12 ex-MENA ficticios ya no existen (catálogo DLTV, TEAMS-01)
   const moved = {
     'mirage-esports': 'weu', 'nile-guardians': 'weu', 'atlas-wolves': 'weu', 'sahara-sentinels': 'weu', 'marrakech-storm': 'weu', 'dune-runners': 'weu',
     'crescent-titans': 'eeu', 'oryx-esports': 'eeu', 'phoenix-al-sharq': 'eeu', 'red-sea-rebels': 'eeu', 'sultans-esports': 'eeu', 'oasis-kings': 'eeu'
   };
   const s = DCS.store.newState({ seed: 'REGION-TEST', name: 'T', nick: 't', nationality: 'Egipto', region: 'weu', role: 'mid', archetype: 'mechanical' });
   Object.keys(moved).forEach(id => {
-    const t = s.world.teams.find(x => x.id === id);
-    assert.ok(t, 'falta equipo ' + id);
-    assert.strictEqual(t.region, moved[id], 'región de ' + id);
+    assert.ok(!s.world.teams.some(x => x.id === id), 'sigue en el mundo ' + id);
+    assert.ok(!DCS.data.TEAM_BY_ID[id], 'sigue en el catálogo ' + id);
   });
+  // equipos reales que sí existen, para fabricar el guardado con 'mena'
+  const keep = {};
+  ['natus-vincere', 'team-spirit'].forEach(id => { keep[id] = DCS.data.TEAM_BY_ID[id].region; });
 
   // 5. Migración de un guardado con 'mena'
   const old = JSON.parse(JSON.stringify(s));
   old.player.region = old.player.homeRegion = 'mena';
   if (old.career) old.career.startingRegion = 'mena';
-  Object.keys(moved).forEach(id => { old.world.teams.find(x => x.id === id).region = 'mena'; });
+  Object.keys(keep).forEach(id => { old.world.teams.find(x => x.id === id).region = 'mena'; });
   const mine = old.player.teamId && old.world.teams.find(x => x.id === old.player.teamId);
   if (mine) mine.region = 'mena';
   (old.offers || []).forEach(o => { if ('region' in o) o.region = 'mena'; });
@@ -54,7 +56,7 @@ try {
   const aJson = JSON.stringify(a);
   assert.ok(!aJson.includes('"mena"'), 'queda "mena" tras migrar');
   assert.ok(SIX.includes(a.player.region) && SIX.includes(a.player.homeRegion));
-  Object.keys(moved).forEach(id => assert.strictEqual(a.world.teams.find(x => x.id === id).region, moved[id], 'migración ' + id));
+  Object.keys(keep).forEach(id => assert.strictEqual(a.world.teams.find(x => x.id === id).region, keep[id], 'migración ' + id));
 
   const b = DCS.store.load();
   assert.strictEqual(JSON.stringify(b), aJson, 'cargar dos veces no da lo mismo');
@@ -81,4 +83,4 @@ try {
   console.error('FALLO: ' + (e && e.stack || e));
   process.exit(1);
 }
-console.log('OK: seis regiones — catálogo, nacionalidades, migración mena idempotente y avance tras migrar.');
+console.log('OK: seis regiones — catálogo, nacionalidades, ex-MENA ficticios retirados, migración mena idempotente y avance tras migrar.');

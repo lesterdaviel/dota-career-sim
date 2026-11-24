@@ -1,0 +1,212 @@
+[
+  {
+    "posicion": 1,
+    "equipo": "Team Yandex",
+    "archivo": "logos/01-team-yandex.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/12pnnPv0JfxJO0MneMlJDb0pjsV82oVB.png.webp"
+  },
+  {
+    "posicion": 2,
+    "equipo": "PARIVISION",
+    "archivo": "logos/02-parivision.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/LsVqzDTPzN7qzT7EsqLuyeOpGkht5AVt.png.webp"
+  },
+  {
+    "posicion": 3,
+    "equipo": "Team Spirit",
+    "archivo": "logos/03-team-spirit.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/7ANCLxgwRDMqqlQvF0pHmasYyXrZ8V3A.png.webp"
+  },
+  {
+    "posicion": 4,
+    "equipo": "Natus Vincere",
+    "archivo": "logos/04-natus-vincere.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/4Qxd8LGsNkAKWHKwfoSJiRoRE8IdflDI.png.webp"
+  },
+  {
+    "posicion": 5,
+    "equipo": "DO KONCA",
+    "archivo": "logos/05-do-konca.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/romItJOCvWxDcSg0eq98UAOpmrZJU10t.png"
+  },
+  {
+    "posicion": 6,
+    "equipo": "Team Liquid",
+    "archivo": "logos/06-team-liquid.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/jzS2BJn2w338twINzzRUUElFEDvdcQgp.png.webp"
+  },
+  {
+    "posicion": 7,
+    "equipo": "Aurora",
+    "archivo": "logos/07-aurora.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/CiPyyFif5pBUjKO3bEjzAh3Edd1b0JGu.png"
+  },
+  {
+    "posicion": 8,
+    "equipo": "GamerLegion",
+    "archivo": "logos/08-gamerlegion.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/SL5XvIyOVg02fCankoCetSnjT3x7FdVY.png"
+  },
+  {
+    "posicion": 9,
+    "equipo": "1win Team",
+    "archivo": "logos/09-1win-team.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/ABiiALC6B9K3sk7Fui1M5Uhnf6RetRll.png.webp"
+  },
+  {
+    "posicion": 10,
+    "equipo": "Team Nemesis",
+    "archivo": "logos/10-team-nemesis.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/8qEQxsfY2yoXNpUhbm8RThm4lgzDzC79.png.webp"
+  },
+  {
+    "posicion": 11,
+    "equipo": "LGD Gaming",
+    "archivo": "logos/11-lgd-gaming.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/6dA6cd7zwFvaAuFFPldKLrbygXopSqBr.png"
+  },
+  {
+    "posicion": 12,
+    "equipo": "CyberHero",
+    "archivo": "logos/12-cyberhero.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/W58W6SrhQfIZYEZVK5crfEHu31Enbfc9.png"
+  },
+  {
+    "posicion": 13,
+    "equipo": "Xtreme Gaming",
+    "archivo": "logos/13-xtreme-gaming.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/pkxvH8kJYZKdmgO9AS91nECnHE5cwqAw.png.webp"
+  },
+  {
+    "posicion": 14,
+    "equipo": "OG",
+    "archivo": "logos/14-og.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/Q2wHmrySFb5UfMXHPUgkU3AIaOMUidze.png"
+  },
+  {
+    "posicion": 15,
+    "equipo": "Team Resilience",
+    "archivo": "logos/15-team-resilience.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/6gVtvSOvcbST1VUFn7RCbvMQj2cKNevn.png"
+  },
+  {
+    "posicion": 16,
+    "equipo": "Yakult Brothers",
+    "archivo": "logos/16-yakult-brothers.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/V8za7EXm8bWwXAUDctAv1enx08p9iat1.png"
+  },
+  {
+    "posicion": 17,
+    "equipo": "Froglings",
+    "archivo": "logos/17-froglings.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/ckYH74bFAsYHYdtdRTmTG4DzhQW2Oor2.png"
+  },
+  {
+    "posicion": 18,
+    "equipo": "LEGION",
+    "archivo": "logos/18-legion.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/daMVhKsAxnX1m4vwFkaU6Hue0VEps3j2.png"
+  },
+  {
+    "posicion": 19,
+    "equipo": "Inner Circle",
+    "archivo": "logos/19-inner-circle.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/g0qIsTyso5cQylIY7xnnCgQEi05uvITy.png.webp"
+  },
+  {
+    "posicion": 20,
+    "equipo": "Yellow Submarine",
+    "archivo": "logos/20-yellow-submarine.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/gexfrNniwJNykJuJrvuGwqaPu6tnOqcl.png.webp"
+  },
+  {
+    "posicion": 21,
+    "equipo": "PlayTime",
+    "archivo": "logos/21-playtime.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/zeqShIkHYdPiFZYqJFnJ69IbEAYl3jTX.png"
+  },
+  {
+    "posicion": 22,
+    "equipo": "HULIGANI",
+    "archivo": "logos/22-huligani.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/UK2f2lvUH2dTgCkfmW3o6Teuv0ANn2d0.png"
+  },
+  {
+    "posicion": 23,
+    "equipo": "Astra Invicta",
+    "archivo": "logos/23-astra-invicta.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/xEW2sie9l9LS3XFiFnu4Rrbg2n1yP53k.webp"
+  },
+  {
+    "posicion": 24,
+    "equipo": "Power Rangers",
+    "archivo": "logos/24-power-rangers.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/c6YgbATf82Ipt3QsF0ngfVV6I3H0hrHk.png"
+  },
+  {
+    "posicion": 25,
+    "equipo": "Team Lynx",
+    "archivo": "logos/25-team-lynx.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/2eNDhgPMCyClg59r09ZOOnH2X2w06nXo.png"
+  },
+  {
+    "posicion": 26,
+    "equipo": "Xipto Esports",
+    "archivo": "logos/26-xipto-esports.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/bMIMZvxcBKA1wOJEuiDrhZk7Vb77iK6J.png"
+  },
+  {
+    "posicion": 27,
+    "equipo": "Execration",
+    "archivo": "logos/27-execration.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/ecPtPEY6zzmTDi8sEfD3M5YCjsrDA6yV.png"
+  },
+  {
+    "posicion": 28,
+    "equipo": "Nemiga Gaming",
+    "archivo": "logos/28-nemiga-gaming.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/SUMopbGBhvWP8Rwz0IVY1YYfhAcKEB0t.png"
+  },
+  {
+    "posicion": 29,
+    "equipo": "Royal Bear",
+    "archivo": "logos/29-royal-bear.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/fm8vDRED8L7Jhoihqzi1dMpmqCwy3Od1.png"
+  },
+  {
+    "posicion": 30,
+    "equipo": "Amaru Gaming",
+    "archivo": "logos/30-amaru-gaming.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/mRik1I1V0BM3PxKEgbTxmgoay0zqBXwa.png"
+  },
+  {
+    "posicion": 31,
+    "equipo": "Zero Tenacity",
+    "archivo": "logos/31-zero-tenacity.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/5yx2eoxvvmNGonvFCWcZ6FKFsNXskVlM.png.webp"
+  },
+  {
+    "posicion": 32,
+    "equipo": "PuckChamp",
+    "archivo": "logos/32-puckchamp.webp",
+    "origen": "https://s3.dltv.org/uploads/teams/b2OKfkF3k0XVPWjGG9pfJbHXztOM61GS.png.webp"
+  },
+  {
+    "posicion": 33,
+    "equipo": "InterActive Philippines",
+    "archivo": "logos/33-interactive-philippines.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/hy9Kmd9b8C7adZuxSxXcbd9La7sKp1Yt.png"
+  },
+  {
+    "posicion": 34,
+    "equipo": "Pibbles Corp",
+    "archivo": "logos/34-pibbles-corp.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/PJp2t2BON9i0z791CRDyDegQ4xxYAXhw.png"
+  },
+  {
+    "posicion": 35,
+    "equipo": "Team Synapse",
+    "archivo": "logos/35-team-synapse.png",
+    "origen": "https://s3.dltv.org/uploads/teams/medium/kjImYbHDCf1Vsiquqq2y2YXhwS8tnXUm.png"
+  }
+]

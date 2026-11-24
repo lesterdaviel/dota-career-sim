@@ -162,10 +162,55 @@ obliga a tocar el motor.
 
 ---
 
+## Catálogo de equipos
+
+El mundo tiene **solo 35 equipos**: los del ranking DLTV del **23/11/2026**
+(<https://dltv.org/ranking>), sin equipos ficticios. Nombres, logos y orden inicial vienen
+de DLTV; la nota local de países y regiones está en
+`logos/DLTV_Top35_2026-11-23/DLTV_Top35_paises_regiones_2026-11-23.md`. Los logos son
+propiedad de sus titulares y se usan sin fines comerciales. Ratings, tiers y plantillas
+los genera el juego (Tier 1 puestos 1-16, Tier 2 17-26, Tier 3 27-35; el rating sigue
+el orden del ranking dentro de la banda de cada tier del catálogo anterior, T1 1519-1059,
+T2 1074-1015 y T3 1046-1000, para conservar la escala de fuerza) y no reflejan jugadores ni datos actuales.
+
+Cada equipo de `DCS.data.TEAMS` guarda:
+
+- `country`: país de la organización (código ISO) o `null` si es internacional o sin país único.
+- `displayRegion`: texto de la región tal como aparece en la nota (p. ej. «Europa»).
+- `competitiveRegion`: región competitiva real o `null` si no está confirmada.
+- `region`: región de **simulación**, la que usa el motor (circuito, clasificatorios).
+- `regionStatus`: `confirmed`, `provisional` o `unconfirmed`.
+
+Pendientes de confirmar: DO KONCA, CyberHero e Inner Circle son `provisional`.
+Froglings, PlayTime y Astra Invicta son europeos sin subregión confirmada
+(`competitiveRegion: null`, `unconfirmed`); por **decisión de simulación** usan `weu`,
+así juegan los abiertos y el circuito WEU y no quedan sin clasificatorio.
+
+Regiones con pocos equipos: Norteamérica tiene 1 (GamerLegion) y Sudamérica 2 (Amaru
+Gaming, Pibbles Corp). Sus torneos completan el campo con equipos reales de otras
+regiones; nunca se inventan rivales.
+
+Logos: se sirven directamente desde `logos/DLTV_Top35_2026-11-23/logos/` (archivo
+`<rank 2 dígitos>-<nombre>`), sin copias ni base64 de equipos; si falta un logo se pintan
+las iniciales. Para itch.io, sube esa carpeta (con la misma ruta) junto al `index.html`.
+
+Cómo actualizar el catálogo: sustituye la carpeta `logos/DLTV_Top35_2026-11-23/` y edita
+la lista `TEAMS` del bloque DATA / TEAMS de `cursor-merge/latest-cursor2.html`; actualiza
+también la nota de la fuente y `DCS.data.TEAM_SNAPSHOT`.
+
+Partidas guardadas (`migrateCatalogDltv`, idempotente): los equipos que siguen reciben
+nombre, región, logo y datos del catálogo conservando roster, contratos y `tierHistory`;
+los retirados salen del mundo sin convertirse en otro equipo; si el jugador estaba en uno,
+pasa a agente libre con su progreso, dinero, historia y trofeos, y su torneo en curso se
+descarta; las ofertas de retirados se eliminan. Historial, palmarés y ranking guardan los
+nombres pasados (sin el id, se muestran las iniciales).
+
+---
+
 ## Tests
 
-Antes de publicar: `node tools/finance-test.js`, `node tools/trophy-test.js` y
-`node tools/tournament-test.js`. Los tres cargan `dist/index.html` (el artefacto real,
+Antes de publicar: `node tools/finance-test.js`, `node tools/trophy-test.js`,
+`node tools/tournament-test.js` y `node tools/teams-test.js`. Los tres cargan `dist/index.html` (el artefacto real,
 vía `tools/load-dist.js`) y simulan cientos de carreras completas comprobando
 contabilidad, sala de trofeos e invariantes del motor de torneos. `tools/balance.html`
 es un test de balance más antiguo que corre sobre `src/`, congelado desde el 31 de
