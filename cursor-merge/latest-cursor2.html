@@ -4108,11 +4108,16 @@ a { color: var(--ember); }
   isolation: isolate;
   /* PORTADA-OVERHAUL · humo Radiant (azul, arriba-izq.) y Dire (rojo,
      abajo-der.) sobre casi negro, con viñeteado y ruido. Solo CSS. */
+  /* FORCE-VISUAL-FIX-01: humo mucho más presente; sombra local
+     detrás de la columna izquierda para mantener el texto ≥4,5:1. */
   background:
     var(--vo-noise, none),
-    radial-gradient(ellipse 80% 75% at 45% 45%, transparent 38%, rgba(2, 3, 5, .9) 100%),
-    radial-gradient(60% 70% at 90% 95%, rgba(120, 20, 20, .35), transparent 72%),
-    radial-gradient(55% 65% at 8% 4%, rgba(20, 60, 110, .30), transparent 72%),
+    radial-gradient(ellipse 90% 85% at 50% 48%, transparent 45%, rgba(1, 2, 4, .92) 100%),
+    radial-gradient(38% 55% at 22% 52%, rgba(3, 4, 7, .7), transparent 75%),
+    radial-gradient(35% 40% at 52% 40%, rgba(90, 40, 120, .22), transparent 75%),
+    radial-gradient(55% 60% at 74% 48%, rgba(170, 30, 30, .42), transparent 72%),
+    radial-gradient(65% 70% at 95% 100%, rgba(170, 30, 30, .55), transparent 72%),
+    radial-gradient(60% 65% at 5% 0%, rgba(30, 80, 150, .45), transparent 72%),
     #05070a;
 }
 /* Niebla: dos capas con deriva lenta (transform/opacity). */
@@ -4122,23 +4127,25 @@ a { color: var(--ember); }
 }
 .hero-stage.bx-home::before {
   background:
-    radial-gradient(40% 30% at 30% 35%, rgba(60, 100, 150, .14), transparent 70%),
-    radial-gradient(35% 25% at 68% 72%, rgba(140, 45, 38, .13), transparent 70%);
+    radial-gradient(30% 22% at 28% 30%, rgba(40, 90, 160, .35), transparent 70%),
+    radial-gradient(32% 24% at 70% 70%, rgba(180, 40, 35, .38), transparent 70%);
+  opacity: .6;
   animation: bxFogA 52s ease-in-out infinite alternate;
 }
 .hero-stage.bx-home::after {
   background:
-    radial-gradient(45% 28% at 72% 25%, rgba(170, 180, 200, .05), transparent 70%),
-    radial-gradient(40% 30% at 20% 82%, rgba(150, 160, 180, .045), transparent 70%);
+    radial-gradient(34% 20% at 75% 28%, rgba(150, 50, 60, .3), transparent 70%),
+    radial-gradient(30% 22% at 20% 80%, rgba(60, 70, 130, .28), transparent 70%);
+  opacity: .6;
   animation: bxFogB 44s ease-in-out infinite alternate;
 }
 @keyframes bxFogA {
-  from { transform: translate3d(-4%, -2%, 0) scale(1); opacity: .7; }
-  to { transform: translate3d(5%, 3%, 0) scale(1.08); opacity: 1; }
+  from { transform: translate3d(-4%, -2%, 0) scale(1); opacity: .5; }
+  to { transform: translate3d(5%, 3%, 0) scale(1.08); opacity: .7; }
 }
 @keyframes bxFogB {
-  from { transform: translate3d(4%, 2%, 0) scale(1.04); opacity: 1; }
-  to { transform: translate3d(-5%, -3%, 0) scale(1); opacity: .6; }
+  from { transform: translate3d(4%, 2%, 0) scale(1.04); opacity: .7; }
+  to { transform: translate3d(-5%, -3%, 0) scale(1); opacity: .5; }
 }
 .hero-stage.bx-home > .bx-home-top,
 .hero-stage.bx-home > .bx-home-grid { position: relative; z-index: 1; }
@@ -4359,15 +4366,15 @@ a { color: var(--ember); }
 .lang-switch-home .lang-svg {
   display: block; width: 30px; height: 21px; border-radius: 5px;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
-  filter: saturate(.75) brightness(.82);
   transition: filter .16s, box-shadow .16s;
 }
-.lang-switch-home .lang-btn:hover { transform: scale(1.06); }
+.lang-switch-home .lang-btn:not(.active) { opacity: .65; transition: transform .16s, opacity .16s; }
+.lang-switch-home .lang-btn:hover { transform: scale(1.06); opacity: 1; }
 .lang-switch-home .lang-btn:hover .lang-svg { filter: saturate(1.05) brightness(1.15); }
 .lang-switch-home .lang-btn:focus-visible { outline: 3px solid #fff4de; outline-offset: 1px; }
 .lang-switch-home .lang-btn.active .lang-svg {
   filter: none;
-  box-shadow: 0 0 0 2px #05070a, 0 0 0 4px var(--gold, #d4a84b), 0 0 12px rgba(212, 168, 75, .45);
+  box-shadow: 0 0 0 2px #ff6b3d, 0 0 12px rgba(255, 107, 61, .6);
 }
 /* Táctil: 40 px de alto; la pastilla mide 46 px y la barra superior
    (.bx-home-grid con padding-top: 88px) sigue dejando hueco de sobra. */
